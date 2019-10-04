@@ -9,9 +9,16 @@ import { Route } from 'react-router-dom'
 
 interface AppProps {
   notes: NotesProps
+  wipeDb: () => void
 }
 
 export default class App extends React.PureComponent<AppProps> {
+  onClickWipeDb = () => {
+    this.props.wipeDb()
+    window.alert('Database wiped.')
+    window.location.reload()
+  }
+
   renderNoteView = (args: any) => {
     const { notes } = this.props
     const id: string = args.match.params.id
@@ -32,6 +39,8 @@ export default class App extends React.PureComponent<AppProps> {
     return <HashRouter>
       <div className="App">
         <Link to="/notes">Notes</Link>
+        <br/>
+        <button onClick={this.onClickWipeDb}>Wipe database</button>
         <br/>
 
         <Route path="/notes" exact render={this.renderNotesView} />
