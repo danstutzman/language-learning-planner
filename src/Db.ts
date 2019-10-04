@@ -1,10 +1,5 @@
 import Dexie from 'dexie'
-
-export interface Note {
-  id?: number
-  name?: string
-  age?: number
-}
+import { Note } from './NotesStorage'
 
 const DB_NAME = 'language-learning-planner'
 
@@ -14,7 +9,7 @@ export default class Db extends Dexie {
   constructor() {
     super(DB_NAME)
     this.version(1).stores({
-      notes: "++id,name,age",
+      notes: "++id,text,createdAtMillis,updatedAtMillis",
     })
   }
 }
