@@ -4,19 +4,19 @@ import './NotesView.css'
 import * as React from 'react'
 
 export interface NotesViewProps {
-  // history: any,
+  history: any,
   notes: NotesProps
 }
 
 export default class NotesView extends React.PureComponent<NotesViewProps> {
   onClickNote = (e: any) => {
     const id = e.currentTarget.getAttribute('data-id')
-    // this.props.history.push(`/notes/${id}`)
+    this.props.history.push(`/notes/${id}`)
   }
 
   onClickNewNote = () => {
     this.props.notes.createNote().then(note =>
-      null // this.props.history.push(`/notes/${note.id}`)
+      this.props.history.push(`/notes/${note.id}`)
     )
   }
 

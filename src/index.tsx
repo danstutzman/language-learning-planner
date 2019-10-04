@@ -1,3 +1,4 @@
+import App from './components/App'
 import Db from './Db'
 import { Note } from './NotesStorage'
 import { NotesProps } from './NotesStorage'
@@ -12,11 +13,9 @@ async function main() {
   notesStorage.eventEmitter.on('notes', render)
 
   function render() {
-    ReactDOM.render(
-      <NotesView notes={notesStorage.props} />,
-      // <NotesView n={3} />,
-      document.getElementById("example")
-    )
+    ReactDOM.render(<App
+      notes={notesStorage.props}
+    />, document.getElementById('example'))
   }
   render()
 }
