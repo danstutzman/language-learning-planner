@@ -35,7 +35,8 @@ export default class CardsView extends React.PureComponent<CardsViewProps> {
         <thead>
           <tr>
             <th>ID</th>
-            <th>Text</th>
+            <th>L1</th>
+            <th>L2</th>
             <th>CreatedAt</th>
             <th>UpdatedAt</th>
             <th>Delete</th>
@@ -49,7 +50,8 @@ export default class CardsView extends React.PureComponent<CardsViewProps> {
               onClick={this.onClickCard}
               data-id={card.id}>
               <td>{card.id}</td>
-              <td>{card.text}</td>
+              <td>{card.l1}</td>
+              <td>{card.l2}</td>
               <td>{card.createdAtMillis}</td>
               <td>{card.updatedAtMillis}</td>
               <td>

@@ -3,7 +3,8 @@ import Db from './Db'
 
 export interface Card {
   id?: number
-  text: string
+  l1: string
+  l2: string
   createdAtMillis: number
   updatedAtMillis: number
 }
@@ -42,8 +43,12 @@ export default class CardsStorage {
 
   createCard = async (): Promise<Card> => {
     const createdAtMillis = new Date().getTime()
-    const unsavedCard: Card =
-      { text: '', createdAtMillis, updatedAtMillis: createdAtMillis }
+    const unsavedCard: Card = {
+      l1: '',
+      l2: '',
+      createdAtMillis,
+      updatedAtMillis: createdAtMillis,
+    }
     const id: number = await this.db.cards.add(unsavedCard)
 
     const savedCard: Card = { ...unsavedCard, id }

@@ -12,7 +12,7 @@ export default class Db extends Dexie {
     super(DB_NAME)
     this.version(1).stores({
       morphemes: "++id,l2,createdAtMillis,updatedAtMillis",
-      cards: "++id,text,createdAtMillis,updatedAtMillis",
+      cards: "++id,l1,l2,createdAtMillis,updatedAtMillis",
     })
   }
 }
