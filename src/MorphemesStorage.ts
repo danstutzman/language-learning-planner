@@ -34,7 +34,6 @@ export default class MorphemesStorage {
     this.db.morphemes
       .each((morpheme: Morpheme) => morphemeById[morpheme.id] = morpheme)
       .then(() => {
-  console.log('morphemeById', morphemeById)
         this.props = { ...this.props, morphemeById }
         this.eventEmitter.emit('morphemes')
       })
