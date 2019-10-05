@@ -29,7 +29,7 @@ export default class CardView extends React.PureComponent<Props, State> {
       l1,
       l2,
       guessedMorphemes: [],
-      partialMorphemes: props.initialMorphemes,
+      partialMorphemes: props.initialMorphemes.concat([{ l2: '', gloss: '' }]),
     }
   }
 
@@ -88,6 +88,27 @@ export default class CardView extends React.PureComponent<Props, State> {
     }))
   }
 
+  onClickDeletePartialMorpheme = (e: any) => {
+    const index = parseInt(e.target.getAttribute('data-index'), 10)
+    this.setState(prev => ({
+      partialMorphemes: prev.partialMorphemes
+        .slice(0, index)
+        .concat(prev.partialMorphemes.slice(index + 1)),
+      guessedMorphemes: [],
+    }))
+  }
+
+  onClickInsertPartialMorpheme = (e: any) => {
+    const index = parseInt(e.target.getAttribute('data-index'), 10)
+    this.setState(prev => ({
+      partialMorphemes: prev.partialMorphemes
+        .slice(0, index + 1)
+        .concat([{ l2: '', gloss: '' }])
+        .concat(prev.partialMorphemes.slice(index + 1)),
+      guessedMorphemes: [],
+    }))
+  }
+
   onClickSave = () => {
     const { l1, l2, partialMorphemes } = this.state
     this.props.save({ ...this.props.card, l1, l2 }, partialMorphemes)
@@ -125,6 +146,8 @@ export default class CardView extends React.PureComponent<Props, State> {
           <tr>
             <th>L2</th>
             <th>Gloss</th>
+            <th></th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -142,6 +165,18 @@ export default class CardView extends React.PureComponent<Props, State> {
                 value={m.gloss}
                 data-index={i}
                 onChange={this.onChangePartialMorphemeGloss} />
+            </td>
+            <td>
+              <button
+                data-index={i}
+                onClick={this.onClickDeletePartialMorpheme}
+                disabled={i === partialMorphemes.length - 1}>Delete</button>
+            </td>
+            <td>
+              <button
+                data-index={i}
+                onClick={this.onClickInsertPartialMorpheme}
+                disabled={i === partialMorphemes.length - 1}>Insert</button>
             </td>
           </tr>)}
         </tbody>
