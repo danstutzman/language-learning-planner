@@ -1,53 +1,36 @@
 import * as React from 'react'
 import {Card} from '../CardsStorage'
-import {GuessedMorpheme} from '../MorphemesStorage'
+import './CardView.css'
 import {Morpheme} from '../MorphemesStorage'
 import {MorphemesProps} from '../MorphemesStorage'
+import {PartialMorpheme} from '../MorphemesStorage'
 
 interface Props {
   close: () => void
   card: Card
-  save: (card: Card) => Promise<Card>
-  guessMorphemes: (l2: string) => Promise<Array<GuessedMorpheme>>
+  save: (card: Card, partialMorphemes: Array<PartialMorpheme>) => Promise<Card>
+  guessMorphemes: (l2: string) => Promise<Array<Morpheme>>
+  initialMorphemes: Array<PartialMorpheme>,
 }
 
 interface State {
   l1: string
   l2: string
-  guessedMorphemes: null | Array<GuessedMorpheme>
-  acceptedMorphemeIds: {[morphemeId: number]: true}
+  guessedMorphemes: Array<Morpheme>
+  partialMorphemes: Array<PartialMorpheme>
 }
 
 export default class CardView extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props)
 
-    const { l1, l2, acceptedMorphemeIds } = props.card
+    const { l1, l2 } = props.card
     this.state = {
       l1,
       l2,
-      acceptedMorphemeIds,
-      guessedMorphemes: null,
+      guessedMorphemes: [],
+      partialMorphemes: props.initialMorphemes,
     }
-  }
-
-  componentDidMount() {
-    this.props.guessMorphemes(this.state.l2)
-      .then(this.updateStateWithGuessedMorphemes)
-  }
-
-  updateStateWithGuessedMorphemes =
-      (guessedMorphemes: Array<GuessedMorpheme>) => {
-    this.setState(prevState => {
-      if (guessedMorphemes.map(m => m.id).join(',') ===
-          (prevState.guessedMorphemes || []).map(m => m.id).join(',')) {
-        return { guessedMorphemes, acceptedMorphemeIds: {} }
-      } else {
-        // unnecessary but satisfies type checker
-        return { guessedMorphemes,
-          acceptedMorphemeIds: prevState.acceptedMorphemeIds }
-      }
-    })
   }
 
   onChangeL1 = (e: any) => {
@@ -57,55 +40,76 @@ export default class CardView extends React.PureComponent<Props, State> {
 
   onChangeL2 = (e: any) => {
     const l2 = e.target.value
-
-    this.props.guessMorphemes(l2).then(this.updateStateWithGuessedMorphemes)
-
     this.setState({ l2 })
   }
 
-  onChangeAcceptedMorphemeIds = (e: any) => {
-    const accepted = e.target.checked
-    const morphemeId = e.target.getAttribute('data-morpheme-id')
-    if (accepted) {
-      this.setState(prevState => ({
-        acceptedMorphemeIds: {
-          ...prevState.acceptedMorphemeIds,
-          [morphemeId]: true,
-        },
-      }))
-    } else {
-      this.setState(prevState => {
-        const acceptedMorphemeIds = { ...prevState.acceptedMorphemeIds }
-        delete acceptedMorphemeIds[morphemeId]
-        return { acceptedMorphemeIds }
-      })
-    }
+  onChangePartialMorphemeL2 = (e: any) => {
+    const l2 = e.target.value
+    const index = parseInt(e.target.getAttribute('data-index'), 10)
+    this.setState(prev => {
+      if (index === prev.partialMorphemes.length - 1) {
+        this.props.guessMorphemes(l2).then(
+          guessedMorphemes => this.setState({ guessedMorphemes }))
+      }
+      return {
+        partialMorphemes: prev.partialMorphemes.slice(0, index)
+          .concat([{ l2, gloss: prev.partialMorphemes[index].gloss }])
+          .concat(prev.partialMorphemes.slice(index + 1)),
+      }
+    })
+    
+  }
+
+  onChangePartialMorphemeGloss = (e: any) => {
+    const gloss = e.target.value
+    const index = parseInt(e.target.getAttribute('data-index'), 10)
+    this.setState(prev => ({
+      partialMorphemes: prev.partialMorphemes.slice(0, index)
+        .concat([{ l2: prev.partialMorphemes[index].l2, gloss }])
+        .concat(prev.partialMorphemes.slice(index + 1))
+        .concat((index === prev.partialMorphemes.length - 1) ?
+          [{ l2: '', gloss: ''}] : []),
+    }))
+  }
+
+  onClickGuessedMorpheme = (e: any) => {
+    const index = parseInt(e.target.getAttribute('data-index'), 10)
+    this.setState(prev => ({
+      partialMorphemes: prev.partialMorphemes
+        .slice(0, prev.partialMorphemes.length - 1) // overwrite the last
+        .concat([{
+          l2: prev.guessedMorphemes[index].l2,
+          gloss: prev.guessedMorphemes[index].gloss,
+        }, {
+          l2: '',
+          gloss: '',
+        }]),
+      guessedMorphemes: [],
+    }))
   }
 
   onClickSave = () => {
-    const { l1, l2, acceptedMorphemeIds } = this.state
-
-    this.props.save({
-      ...this.props.card,
-      l1,
-      l2,
-      acceptedMorphemeIds,
-    })
+    const { l1, l2, partialMorphemes } = this.state
+    this.props.save({ ...this.props.card, l1, l2 }, partialMorphemes)
   }
 
   render() {
-    const { l1, l2, guessedMorphemes, acceptedMorphemeIds } = this.state
+    const {
+      l1,
+      l2,
+      guessedMorphemes,
+      partialMorphemes,
+    } = this.state
     const { card, close } = this.props
 
     return <div>
       <h2>
         Card ID={card.id}
-        {JSON.stringify(acceptedMorphemeIds)}
         <button onClick={close}>X</button>
       </h2>
 
       <b>L1</b>
-      <input type='text' value={l1} onChange={this.onChangeL1} />
+      <input type='text' value={l1} onChange={this.onChangeL1} autoFocus />
       <br/>
 
       <b>L2</b>
@@ -115,25 +119,47 @@ export default class CardView extends React.PureComponent<Props, State> {
         onChange={this.onChangeL2} />
       <br/>
 
-      <b>Guessed Morphemes</b>
-      {guessedMorphemes === null ? 'Loading' :
-        <table>
-          <tbody>
-            {guessedMorphemes.map((row: GuessedMorpheme, i: number) =>
-              <tr key={i}>
-                <td>
-                  <input
-                    type='checkbox'
-                    data-morpheme-id={row.id}
-                    checked={acceptedMorphemeIds[row.id] || false}
-                    onChange={this.onChangeAcceptedMorphemeIds} />
-                </td>
-                <td>{row.id}</td>
-                <td>{row.l2Index}</td>
-                <td>{row.l2}</td>
-              </tr>)}
-          </tbody>
-        </table>}
+      <b>Morphemes</b>
+      <table>
+        <thead>
+          <tr>
+            <th>L2</th>
+            <th>Gloss</th>
+          </tr>
+        </thead>
+        <tbody>
+          {partialMorphemes.map((m: PartialMorpheme, i: number) => <tr key={i}>
+            <td>
+              <input
+                type='text'
+                value={m.l2}
+                data-index={i}
+                onChange={this.onChangePartialMorphemeL2} />
+            </td>
+            <td>
+              <input
+                type='text'
+                value={m.gloss}
+                data-index={i}
+                onChange={this.onChangePartialMorphemeGloss} />
+            </td>
+          </tr>)}
+        </tbody>
+      </table>
+
+      <table style={{border: '1px black solid'}}>
+        <tbody>
+          {guessedMorphemes.map((m: Morpheme, i: number) =>
+            <tr key={i} className='darken-on-hover'>
+              <td onClick={this.onClickGuessedMorpheme} data-index={i}>
+                {m.l2}
+              </td>
+              <td onClick={this.onClickGuessedMorpheme} data-index={i}>
+                {m.gloss}
+              </td>
+            </tr>)}
+        </tbody>
+      </table>
 
       <button onClick={this.onClickSave}>Save</button>
     </div>

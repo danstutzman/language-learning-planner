@@ -8,6 +8,7 @@ import {Morpheme} from '../MorphemesStorage'
 import {MorphemesProps} from '../MorphemesStorage'
 import MorphemeView from './MorphemeView'
 import MorphemesView from './MorphemesView'
+import {PartialMorpheme} from '../MorphemesStorage'
 import * as React from 'react'
 import { Route } from 'react-router-dom'
 
@@ -62,10 +63,18 @@ export default class App extends React.PureComponent<AppProps> {
 
     const card = cards.cardById[parseInt(id, 10)]
     if (card) {
-      const save = (card: Card) => cards.updateCard(card)
+      const initialMorphemes = card.morphemeIds.map(morphemeId =>
+        morphemes.morphemeById[morphemeId])
+      const save = (card: Card, partialMorphemes: Array<PartialMorpheme>) =>
+        morphemes.findOrCreateMorphemes(partialMorphemes)
+          .then(morphemes => cards.updateCard({
+            ...card,
+            morphemeIds: morphemes.map(m => m.id),
+          }))
       return <CardView
         close={args.history.goBack}
         card={card}
+        initialMorphemes={initialMorphemes}
         guessMorphemes={morphemes.guessMorphemes}
         save={save} />
     } else {

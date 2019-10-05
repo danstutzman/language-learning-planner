@@ -37,7 +37,7 @@ export default class CardsView extends React.PureComponent<CardsViewProps> {
             <th>ID</th>
             <th>L1</th>
             <th>L2</th>
-            <th>AcceptedMorphemeIds</th>
+            <th>MorphemeIds</th>
             <th>CreatedAt</th>
             <th>UpdatedAt</th>
             <th>Delete</th>
@@ -53,7 +53,7 @@ export default class CardsView extends React.PureComponent<CardsViewProps> {
               <td>{card.id}</td>
               <td>{card.l1}</td>
               <td>{card.l2}</td>
-              <td>{Object.keys(card.acceptedMorphemeIds).join(',')}</td>
+              <td>{card.morphemeIds.join(',')}</td>
               <td>{card.createdAtMillis}</td>
               <td>{card.updatedAtMillis}</td>
               <td>

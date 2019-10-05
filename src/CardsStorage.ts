@@ -5,7 +5,7 @@ export interface Card {
   id?: number
   l1: string
   l2: string
-  acceptedMorphemeIds: {[morphemeId: number]: true}
+  morphemeIds: Array<number>,
   createdAtMillis: number
   updatedAtMillis: number
 }
@@ -47,7 +47,7 @@ export default class CardsStorage {
     const unsavedCard: Card = {
       l1: '',
       l2: '',
-      acceptedMorphemeIds: {},
+      morphemeIds: [],
       createdAtMillis,
       updatedAtMillis: createdAtMillis,
     }
@@ -66,21 +66,23 @@ export default class CardsStorage {
     return savedCard
   }
 
-  updateCard = (unsavedCard: Card): Promise<Card> => {
+
+  updateCard = async (unsavedCard: Card): Promise<Card> => {
     const updatedAtMillis = new Date().getTime()
     const savedCard = { ...unsavedCard, updatedAtMillis }
-    return this.db.cards.put(savedCard).then(() => {
-      this.props = {
-        ...this.props,
-        cardById: {
-          ...this.props.cardById,
-          [savedCard.id]: savedCard,
-        },
-      }
-      this.eventEmitter.emit('cards')
 
-      return savedCard
-    })
+    await this.db.cards.put(savedCard)
+
+    this.props = {
+      ...this.props,
+      cardById: {
+        ...this.props.cardById,
+        [savedCard.id]: savedCard,
+      },
+    }
+    this.eventEmitter.emit('cards')
+
+    return savedCard
   }
 
   deleteCard = (id: number): Promise<void> =>

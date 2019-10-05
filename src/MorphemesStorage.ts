@@ -1,3 +1,4 @@
+import { Morpheme } from './MorphemesStorage';
 import * as EventEmitter from 'eventemitter3'
 import Db from './Db'
 
@@ -9,14 +10,17 @@ export interface Morpheme {
   updatedAtMillis: number
 }
 
-export interface GuessedMorpheme extends Morpheme {
-  l2Index: number
+export interface PartialMorpheme {
+  l2: string,
+  gloss: string,
 }
 
 export interface MorphemesProps {
   createMorpheme: () => Promise<Morpheme>
   deleteMorpheme: (id: number) => Promise<void>
-  guessMorphemes: (l2: string) => Promise<Array<GuessedMorpheme>>
+  findOrCreateMorphemes: (partialMorphemes: Array<PartialMorpheme>) =>
+    Promise<Array<Morpheme>>,
+  guessMorphemes: (l2: string) => Promise<Array<Morpheme>>
   hasLoaded: boolean
   morphemeById: {[id: number]: Morpheme}
   updateMorpheme: (morpheme: Morpheme) => Promise<Morpheme>
@@ -24,7 +28,7 @@ export interface MorphemesProps {
 
 export default class MorphemesStorage {
   eventEmitter: EventEmitter
-  guessedMorphemesByL2: {[l2: string]: Array<GuessedMorpheme>}
+  guessedMorphemesByL2: {[l2: string]: Array<Morpheme>}
   props: MorphemesProps
   db: Db
 
@@ -34,6 +38,7 @@ export default class MorphemesStorage {
     this.props = {
       createMorpheme: this.createMorpheme,
       deleteMorpheme: this.deleteMorpheme,
+      findOrCreateMorphemes: this.findOrCreateMorphemes,
       guessMorphemes: this.guessMorphemes,
       hasLoaded: false,
       morphemeById: {},
@@ -48,6 +53,43 @@ export default class MorphemesStorage {
         this.props = { ...this.props, morphemeById, hasLoaded: true }
         this.eventEmitter.emit('morphemes')
       })
+  }
+
+  findOrCreateMorphemes = async (partialMorphemes: Array<PartialMorpheme>):
+      Promise<Array<Morpheme>> => {
+    const morphemes = []
+    for (const partialMorpheme of partialMorphemes) {
+      const { l2, gloss } = partialMorpheme
+      if (l2 !== '' && gloss !== '') {
+        const matches = (await this.db.morphemes.where({ l2 }).toArray())
+          .filter(morpheme => morpheme.gloss === gloss)
+        if (matches.length > 0) {
+          morphemes.push(matches[0])
+        } else {
+          const createdAtMillis = new Date().getTime()
+          const unsavedMorpheme: Morpheme = {
+            l2,
+            gloss,
+            createdAtMillis,
+            updatedAtMillis: createdAtMillis,
+          }
+          const id: number = await this.db.morphemes.add(unsavedMorpheme)
+          const savedMorpheme: Morpheme = { ...unsavedMorpheme, id }
+          morphemes.push(savedMorpheme)
+
+          this.guessedMorphemesByL2 = {} // clear cache
+          this.props = {
+            ...this.props,
+            morphemeById: {
+              ...this.props.morphemeById,
+              [savedMorpheme.id]: savedMorpheme,
+            },
+          }
+          this.eventEmitter.emit('morphemes')
+        }
+      }
+    }
+    return morphemes
   }
 
   createMorpheme = async (): Promise<Morpheme> => {
@@ -74,20 +116,19 @@ export default class MorphemesStorage {
     return savedMorpheme
   }
 
-  guessMorphemes = async (l2: string): Promise<Array<GuessedMorpheme>> => {
-    let guessedMorphemes: Array<GuessedMorpheme> = this.guessedMorphemesByL2[l2]
+  guessMorphemes = async (l2: string): Promise<Array<Morpheme>> => {
+    let guessedMorphemes: Array<Morpheme> = this.guessedMorphemesByL2[l2]
     if (guessedMorphemes) {
       return guessedMorphemes
     }
 
     const allMorphemes = await this.db.morphemes.toArray()
     guessedMorphemes = []
-    const regex = /[a-zñáéíóúü]+/gi
-    let match
-    while (match = regex.exec(l2)) {
+    const firstMatch = /[a-zñáéíóúü]+/i.exec(l2)
+    if (firstMatch && firstMatch.length > 0) {
       for (const morpheme of allMorphemes) {
-        if (morpheme.l2 === match[0]) {
-          guessedMorphemes.push({ ...morpheme, l2Index: match.index })
+        if (morpheme.l2.startsWith(firstMatch[0])) {
+          guessedMorphemes.push(morpheme)
         }
       }
     }
