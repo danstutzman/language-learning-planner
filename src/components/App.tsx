@@ -19,9 +19,11 @@ interface AppProps {
 
 export default class App extends React.PureComponent<AppProps> {
   onClickWipeDb = () => {
-    this.props.wipeDb()
-    window.alert('Database wiped.')
-    window.location.reload()
+    if (window.confirm('Are you sure you want to wipe the database?')) {
+      this.props.wipeDb()
+      window.alert('Database wiped.')
+      window.location.reload()
+    }
   }
 
   renderMorphemeView = (args: any) => {
