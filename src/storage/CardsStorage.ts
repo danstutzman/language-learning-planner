@@ -66,7 +66,6 @@ export default class CardsStorage {
     return savedCard
   }
 
-
   updateCard = async (unsavedCard: Card): Promise<Card> => {
     const updatedAtMillis = new Date().getTime()
     const savedCard = { ...unsavedCard, updatedAtMillis }
@@ -83,6 +82,17 @@ export default class CardsStorage {
     this.eventEmitter.emit('cards')
 
     return savedCard
+  }
+
+  updateCards = async (cards: Array<Card>): Promise<void> => {
+    await this.db.cards.bulkPut(cards)
+
+    const cardById = { ...this.props.cardById }
+    for (const card of cards) {
+      cardById[card.id] = card
+    }
+    this.props = { ...this.props, cardById }
+    this.eventEmitter.emit('cards')
   }
 
   deleteCard = (id: number): Promise<void> =>

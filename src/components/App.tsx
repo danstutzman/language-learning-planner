@@ -1,7 +1,10 @@
+import {BackendProps} from '../backend/Backend'
 import {Card} from '../storage/CardsStorage'
 import {CardsProps} from '../storage/CardsStorage'
 import CardView from './CardView'
 import CardsView from './CardsView'
+import {DictionaryProps} from '../storage/DictionaryStorage'
+import DictionaryScreen from './DictionaryScreen'
 import { HashRouter } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import {Morpheme} from '../storage/MorphemesStorage'
@@ -11,14 +14,19 @@ import MorphemesView from './MorphemesView'
 import {PartialMorpheme} from '../storage/MorphemesStorage'
 import * as React from 'react'
 import { Route } from 'react-router-dom'
+import {UploadsProps} from '../storage/UploadsStorage'
 
-interface AppProps {
+interface Props {
+  backend: BackendProps,
   cards: CardsProps
+  dictionary: DictionaryProps,
+  log: (event: string, details?: {}) => void,
   morphemes: MorphemesProps
+  uploads: UploadsProps,
   wipeDb: () => void
 }
 
-export default class App extends React.PureComponent<AppProps> {
+export default class App extends React.PureComponent<Props> {
   onClickWipeDb = () => {
     if (window.confirm('Are you sure you want to wipe the database?')) {
       this.props.wipeDb()
@@ -26,6 +34,22 @@ export default class App extends React.PureComponent<AppProps> {
       window.location.reload()
     }
   }
+
+  onClickDownloadDictionary = () =>
+    this.props.backend.downloadDictionary()
+      .then(wordPairs => this.props.dictionary.saveDictionary(wordPairs))
+      .catch(e => console.warn('Error downloading dictionary', e))
+
+  onClickSyncBackend = () =>
+    this.props.uploads.listUploads()
+      .then(uploads => this.props.backend.sync(uploads))
+      .catch(e => console.warn('Sync error', e))
+
+  renderDictionary = () =>
+    <DictionaryScreen
+      backend={this.props.backend}
+      dictionary={this.props.dictionary}
+      log={this.props.log} />
 
   renderMorphemeView = (args: any) => {
     const { morphemes } = this.props
@@ -91,13 +115,21 @@ export default class App extends React.PureComponent<AppProps> {
     return <HashRouter>
       <div className="App">
         <Link to="/cards">Cards</Link>
+        <Link to="/dictionary">Dictionary</Link>
         <Link to="/morphemes">Morphemes</Link>
         <br/>
+
         <button onClick={this.onClickWipeDb}>Wipe database</button>
-        <br/>
+        <button onClick={this.onClickSyncBackend}>Sync backend</button>
+        <button onClick={this.onClickDownloadDictionary}>
+          Download Dictionary
+        </button>
+        <span>networkState={this.props.backend.networkState}</span>
+        <hr />
 
         <Route path="/cards" exact render={this.renderCardsView} />
         <Route path="/cards/:id" render={this.renderCardView} />
+        <Route path="/dictionary" render={this.renderDictionary} />
         <Route path="/morphemes" exact render={this.renderMorphemesView} />
         <Route path="/morphemes/:id" render={this.renderMorphemeView} />
       </div>
