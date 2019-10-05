@@ -29,12 +29,21 @@ export default class App extends React.PureComponent<AppProps> {
   renderMorphemeView = (args: any) => {
     const { morphemes } = this.props
     const id: string = args.match.params.id
+
+    if (!morphemes.hasLoaded) {
+      return <div>Loading...</div>
+    }
+
     const morpheme = morphemes.morphemeById[parseInt(id, 10)]
-    const save = (morpheme: Morpheme) => morphemes.updateMorpheme(morpheme)
-    return <MorphemeView
-      close={args.history.goBack}
-      morpheme={morpheme}
-      save={save} />
+    if (morpheme) {
+      const save = (morpheme: Morpheme) => morphemes.updateMorpheme(morpheme)
+      return <MorphemeView
+        close={args.history.goBack}
+        morpheme={morpheme}
+        save={save} />
+    } else {
+      return <div>Not found</div>
+    }
   }
 
 
@@ -46,12 +55,21 @@ export default class App extends React.PureComponent<AppProps> {
   renderCardView = (args: any) => {
     const { cards } = this.props
     const id: string = args.match.params.id
+
+    if (!cards.hasLoaded) {
+      return <div>Loading...</div>
+    }
+
     const card = cards.cardById[parseInt(id, 10)]
-    const save = (card: Card) => cards.updateCard(card)
-    return <CardView
-      close={args.history.goBack}
-      card={card}
-      save={save} />
+    if (card) {
+      const save = (card: Card) => cards.updateCard(card)
+      return <CardView
+        close={args.history.goBack}
+        card={card}
+        save={save} />
+    } else {
+      return <div>Not found</div>
+    }
   }
 
   renderCardsView = (args: any) =>

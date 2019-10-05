@@ -11,6 +11,7 @@ export interface Card {
 export interface CardsProps {
   cardById: {[id: number]: Card}
   createCard: () => Promise<Card>
+  hasLoaded: boolean
   deleteCard: (id: number) => Promise<void>
   updateCard: (card: Card) => Promise<Card>
 }
@@ -26,6 +27,7 @@ export default class CardsStorage {
       createCard: this.createCard,
       deleteCard: this.deleteCard,
       cardById: {},
+      hasLoaded: false,
       updateCard: this.updateCard,
     }
     this.db = db
@@ -33,7 +35,7 @@ export default class CardsStorage {
     const cardById: {[id: number]: Card} = {}
     this.db.cards.each((card: Card) => cardById[card.id] = card)
       .then(() => {
-        this.props = { ...this.props, cardById }
+        this.props = { ...this.props, cardById, hasLoaded: true }
         this.eventEmitter.emit('cards')
       })
   }

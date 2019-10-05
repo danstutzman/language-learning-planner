@@ -9,9 +9,10 @@ export interface Morpheme {
 }
 
 export interface MorphemesProps {
-  morphemeById: {[id: number]: Morpheme}
   createMorpheme: () => Promise<Morpheme>
   deleteMorpheme: (id: number) => Promise<void>
+  hasLoaded: boolean
+  morphemeById: {[id: number]: Morpheme}
   updateMorpheme: (morpheme: Morpheme) => Promise<Morpheme>
 }
 
@@ -25,6 +26,7 @@ export default class MorphemesStorage {
     this.props = {
       createMorpheme: this.createMorpheme,
       deleteMorpheme: this.deleteMorpheme,
+      hasLoaded: false,
       morphemeById: {},
       updateMorpheme: this.updateMorpheme,
     }
@@ -34,7 +36,7 @@ export default class MorphemesStorage {
     this.db.morphemes
       .each((morpheme: Morpheme) => morphemeById[morpheme.id] = morpheme)
       .then(() => {
-        this.props = { ...this.props, morphemeById }
+        this.props = { ...this.props, morphemeById, hasLoaded: true }
         this.eventEmitter.emit('morphemes')
       })
   }
