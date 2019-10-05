@@ -9,10 +9,14 @@ export interface Morpheme {
   updatedAtMillis: number
 }
 
+export interface GuessedMorpheme extends Morpheme {
+  l2Index: number
+}
+
 export interface MorphemesProps {
   createMorpheme: () => Promise<Morpheme>
   deleteMorpheme: (id: number) => Promise<void>
-  guessMorphemes: (l2: string) => Promise<Array<Morpheme>>
+  guessMorphemes: (l2: string) => Promise<Array<GuessedMorpheme>>
   hasLoaded: boolean
   morphemeById: {[id: number]: Morpheme}
   updateMorpheme: (morpheme: Morpheme) => Promise<Morpheme>
@@ -20,7 +24,7 @@ export interface MorphemesProps {
 
 export default class MorphemesStorage {
   eventEmitter: EventEmitter
-  guessedMorphemesByL2: {[l2: string]: Array<Morpheme>}
+  guessedMorphemesByL2: {[l2: string]: Array<GuessedMorpheme>}
   props: MorphemesProps
   db: Db
 
@@ -70,26 +74,26 @@ export default class MorphemesStorage {
     return savedMorpheme
   }
 
-  guessMorphemes = (l2: string): Promise<Array<Morpheme>> => {
-    const guessedMorphemes = this.guessedMorphemesByL2[l2]
+  guessMorphemes = async (l2: string): Promise<Array<GuessedMorpheme>> => {
+    let guessedMorphemes: Array<GuessedMorpheme> = this.guessedMorphemesByL2[l2]
     if (guessedMorphemes) {
-      return Promise.resolve(guessedMorphemes)
+      return guessedMorphemes
     }
 
-    return this.db.morphemes.toArray()
-      .then(allMorphemes => {
-        const guessedMorphemes = []
-        for (const word of l2.split(/[^a-zñáéíóúü]/i)) {
-          for (const morpheme of allMorphemes) {
-            if (morpheme.l2 === word) {
-              guessedMorphemes.push(morpheme)
-            }
-          }
+    const allMorphemes = await this.db.morphemes.toArray()
+    guessedMorphemes = []
+    const regex = /[a-zñáéíóúü]+/gi
+    let match
+    while (match = regex.exec(l2)) {
+      for (const morpheme of allMorphemes) {
+        if (morpheme.l2 === match[0]) {
+          guessedMorphemes.push({ ...morpheme, l2Index: match.index })
         }
+      }
+    }
 
-        this.guessedMorphemesByL2[l2] = guessedMorphemes
-        return guessedMorphemes
-      })
+    this.guessedMorphemesByL2[l2] = guessedMorphemes
+    return guessedMorphemes
   }
 
   updateMorpheme = (unsavedMorpheme: Morpheme): Promise<Morpheme> => {

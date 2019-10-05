@@ -1,5 +1,6 @@
 import * as React from 'react'
 import {Card} from '../CardsStorage'
+import {GuessedMorpheme} from '../MorphemesStorage'
 import {Morpheme} from '../MorphemesStorage'
 import {MorphemesProps} from '../MorphemesStorage'
 
@@ -7,13 +8,13 @@ interface Props {
   close: () => void
   card: Card
   save: (card: Card) => Promise<Card>
-  guessMorphemes: (l2: string) => Promise<Array<Morpheme>>
+  guessMorphemes: (l2: string) => Promise<Array<GuessedMorpheme>>
 }
 
 interface State {
   l1: string
   l2: string
-  guessedMorphemes: null | Array<Morpheme>
+  guessedMorphemes: null | Array<GuessedMorpheme>
   acceptedMorphemeIds: {[morphemeId: number]: true}
 }
 
@@ -35,7 +36,8 @@ export default class CardView extends React.PureComponent<Props, State> {
       .then(this.updateStateWithGuessedMorphemes)
   }
 
-  updateStateWithGuessedMorphemes = (guessedMorphemes: Array<Morpheme>) => {
+  updateStateWithGuessedMorphemes =
+      (guessedMorphemes: Array<GuessedMorpheme>) => {
     this.setState(prevState => {
       if (guessedMorphemes.map(m => m.id).join(',') ===
           (prevState.guessedMorphemes || []).map(m => m.id).join(',')) {
@@ -117,17 +119,18 @@ export default class CardView extends React.PureComponent<Props, State> {
       {guessedMorphemes === null ? 'Loading' :
         <table>
           <tbody>
-            {guessedMorphemes.map((morpheme: Morpheme, i: number) =>
+            {guessedMorphemes.map((row: GuessedMorpheme, i: number) =>
               <tr key={i}>
                 <td>
                   <input
                     type='checkbox'
-                    data-morpheme-id={morpheme.id}
-                    checked={acceptedMorphemeIds[morpheme.id] || false}
+                    data-morpheme-id={row.id}
+                    checked={acceptedMorphemeIds[row.id] || false}
                     onChange={this.onChangeAcceptedMorphemeIds} />
                 </td>
-                <td>{morpheme.id}</td>
-                <td>{morpheme.l2}</td>
+                <td>{row.id}</td>
+                <td>{row.l2Index}</td>
+                <td>{row.l2}</td>
               </tr>)}
           </tbody>
         </table>}
