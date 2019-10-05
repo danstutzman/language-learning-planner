@@ -1,21 +1,21 @@
 import * as React from 'react'
-import {Note} from '../NotesStorage'
+import {Card} from '../CardsStorage'
 
 interface Props {
   close: () => void
-  note: Note
-  save: (note: Note) => Promise<Note>
+  card: Card
+  save: (card: Card) => Promise<Card>
 }
 
 interface State {
   text: string
 }
 
-export default class NoteView extends React.PureComponent<Props, State> {
+export default class CardView extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props)
     this.state = {
-      text: props.note.text,
+      text: props.card.text,
     }
   }
 
@@ -26,7 +26,7 @@ export default class NoteView extends React.PureComponent<Props, State> {
 
   onClickSave = () => {
     this.props.save({
-      ...this.props.note,
+      ...this.props.card,
       text: this.state.text,
     })
   }
@@ -35,7 +35,7 @@ export default class NoteView extends React.PureComponent<Props, State> {
     const { text } = this.state
     return <div>
       <h2>
-        Note ID={this.props.note.id}
+        Card ID={this.props.card.id}
         <button onClick={this.props.close}>X</button>
       </h2>
 
