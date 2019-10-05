@@ -53,10 +53,10 @@ export default class App extends React.PureComponent<AppProps> {
       morphemes={this.props.morphemes} />
 
   renderCardView = (args: any) => {
-    const { cards } = this.props
+    const { cards, morphemes } = this.props
     const id: string = args.match.params.id
 
-    if (!cards.hasLoaded) {
+    if (!cards.hasLoaded || !morphemes.hasLoaded) {
       return <div>Loading...</div>
     }
 
@@ -66,6 +66,7 @@ export default class App extends React.PureComponent<AppProps> {
       return <CardView
         close={args.history.goBack}
         card={card}
+        guessMorphemes={morphemes.guessMorphemes}
         save={save} />
     } else {
       return <div>Not found</div>
