@@ -1,5 +1,5 @@
-import { Card } from '../CardsStorage'
-import { CardsProps } from '../CardsStorage'
+import { Card } from '../storage/CardsStorage'
+import { CardsProps } from '../storage/CardsStorage'
 import './CardsView.css'
 import * as React from 'react'
 

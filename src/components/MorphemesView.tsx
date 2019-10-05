@@ -1,5 +1,5 @@
-import {Morpheme} from '../MorphemesStorage'
-import {MorphemesProps} from '../MorphemesStorage'
+import {Morpheme} from '../storage/MorphemesStorage'
+import {MorphemesProps} from '../storage/MorphemesStorage'
 import * as React from 'react'
 
 export interface MorphemesViewProps {

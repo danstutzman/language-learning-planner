@@ -1,9 +1,9 @@
 import * as React from 'react'
-import {Card} from '../CardsStorage'
+import {Card} from '../storage/CardsStorage'
 import './CardView.css'
-import {Morpheme} from '../MorphemesStorage'
-import {MorphemesProps} from '../MorphemesStorage'
-import {PartialMorpheme} from '../MorphemesStorage'
+import {Morpheme} from '../storage/MorphemesStorage'
+import {MorphemesProps} from '../storage/MorphemesStorage'
+import {PartialMorpheme} from '../storage/MorphemesStorage'
 
 interface Props {
   close: () => void

@@ -1,5 +1,5 @@
+import {Morpheme} from '../storage/MorphemesStorage'
 import * as React from 'react'
-import {Morpheme} from '../MorphemesStorage'
 
 interface Props {
   close: () => void

@@ -1,6 +1,6 @@
-import { Morpheme } from './MorphemesStorage';
 import * as EventEmitter from 'eventemitter3'
 import Db from './Db'
+import { Morpheme } from './MorphemesStorage';
 
 export interface Morpheme {
   id?: number
