@@ -5,6 +5,7 @@ export interface Card {
   id?: number
   l1: string
   l2: string
+  acceptedMorphemeIds: {[morphemeId: number]: true}
   createdAtMillis: number
   updatedAtMillis: number
 }
@@ -46,6 +47,7 @@ export default class CardsStorage {
     const unsavedCard: Card = {
       l1: '',
       l2: '',
+      acceptedMorphemeIds: {},
       createdAtMillis,
       updatedAtMillis: createdAtMillis,
     }

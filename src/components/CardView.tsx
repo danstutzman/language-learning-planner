@@ -14,22 +14,38 @@ interface State {
   l1: string
   l2: string
   guessedMorphemes: null | Array<Morpheme>
+  acceptedMorphemeIds: {[morphemeId: number]: true}
 }
 
 export default class CardView extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props)
+
+    const { l1, l2, acceptedMorphemeIds } = props.card
     this.state = {
-      l1: props.card.l1,
-      l2: props.card.l2,
+      l1,
+      l2,
+      acceptedMorphemeIds,
       guessedMorphemes: null,
     }
   }
 
   componentDidMount() {
     this.props.guessMorphemes(this.state.l2)
-      .then((guessedMorphemes: Array<Morpheme>) =>
-        this.setState({ guessedMorphemes }))
+      .then(this.updateStateWithGuessedMorphemes)
+  }
+
+  updateStateWithGuessedMorphemes = (guessedMorphemes: Array<Morpheme>) => {
+    this.setState(prevState => {
+      if (guessedMorphemes.map(m => m.id).join(',') ===
+          (prevState.guessedMorphemes || []).map(m => m.id).join(',')) {
+        return { guessedMorphemes, acceptedMorphemeIds: {} }
+      } else {
+        // unnecessary but satisfies type checker
+        return { guessedMorphemes,
+          acceptedMorphemeIds: prevState.acceptedMorphemeIds }
+      }
+    })
   }
 
   onChangeL1 = (e: any) => {
@@ -39,24 +55,50 @@ export default class CardView extends React.PureComponent<Props, State> {
 
   onChangeL2 = (e: any) => {
     const l2 = e.target.value
-    this.props.guessMorphemes(l2)
-      .then(guessedMorphemes => this.setState({ guessedMorphemes }))
+
+    this.props.guessMorphemes(l2).then(this.updateStateWithGuessedMorphemes)
+
     this.setState({ l2 })
   }
 
-  onClickSave = () => {
-    const { l1, l2 } = this.state
+  onChangeAcceptedMorphemeIds = (e: any) => {
+    const accepted = e.target.checked
+    const morphemeId = e.target.getAttribute('data-morpheme-id')
+    if (accepted) {
+      this.setState(prevState => ({
+        acceptedMorphemeIds: {
+          ...prevState.acceptedMorphemeIds,
+          [morphemeId]: true,
+        },
+      }))
+    } else {
+      this.setState(prevState => {
+        const acceptedMorphemeIds = { ...prevState.acceptedMorphemeIds }
+        delete acceptedMorphemeIds[morphemeId]
+        return { acceptedMorphemeIds }
+      })
+    }
+  }
 
-    this.props.save({ ...this.props.card, l1, l2 })
+  onClickSave = () => {
+    const { l1, l2, acceptedMorphemeIds } = this.state
+
+    this.props.save({
+      ...this.props.card,
+      l1,
+      l2,
+      acceptedMorphemeIds,
+    })
   }
 
   render() {
-    const { l1, l2, guessedMorphemes  } = this.state
+    const { l1, l2, guessedMorphemes, acceptedMorphemeIds } = this.state
     const { card, close } = this.props
 
     return <div>
       <h2>
         Card ID={card.id}
+        {JSON.stringify(acceptedMorphemeIds)}
         <button onClick={close}>X</button>
       </h2>
 
@@ -77,6 +119,13 @@ export default class CardView extends React.PureComponent<Props, State> {
           <tbody>
             {guessedMorphemes.map((morpheme: Morpheme, i: number) =>
               <tr key={i}>
+                <td>
+                  <input
+                    type='checkbox'
+                    data-morpheme-id={morpheme.id}
+                    checked={acceptedMorphemeIds[morpheme.id] || false}
+                    onChange={this.onChangeAcceptedMorphemeIds} />
+                </td>
                 <td>{morpheme.id}</td>
                 <td>{morpheme.l2}</td>
               </tr>)}
