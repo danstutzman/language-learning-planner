@@ -4,6 +4,7 @@ import Db from './Db'
 export interface Morpheme {
   id?: number
   l2: string
+  gloss: string
   createdAtMillis: number
   updatedAtMillis: number
 }
@@ -47,8 +48,12 @@ export default class MorphemesStorage {
 
   createMorpheme = async (): Promise<Morpheme> => {
     const createdAtMillis = new Date().getTime()
-    const unsavedMorpheme: Morpheme =
-      { l2: '', createdAtMillis, updatedAtMillis: createdAtMillis }
+    const unsavedMorpheme: Morpheme = {
+      l2: '',
+      gloss: '',
+      createdAtMillis,
+      updatedAtMillis: createdAtMillis,
+    }
     const id: number = await this.db.morphemes.add(unsavedMorpheme)
 
     const savedMorpheme: Morpheme = { ...unsavedMorpheme, id }

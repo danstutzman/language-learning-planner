@@ -36,6 +36,7 @@ export default class MorphemesView extends React.PureComponent<MorphemesViewProp
           <tr>
             <th>ID</th>
             <th>L2</th>
+            <th>Gloss</th>
             <th>CreatedAt</th>
             <th>UpdatedAt</th>
             <th>Delete</th>
@@ -50,6 +51,7 @@ export default class MorphemesView extends React.PureComponent<MorphemesViewProp
               data-id={morpheme.id}>
               <td>{morpheme.id}</td>
               <td>{morpheme.l2}</td>
+              <td>{morpheme.gloss}</td>
               <td>{morpheme.createdAtMillis}</td>
               <td>{morpheme.updatedAtMillis}</td>
               <td>

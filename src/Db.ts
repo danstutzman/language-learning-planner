@@ -11,7 +11,7 @@ export default class Db extends Dexie {
   constructor() {
     super(DB_NAME)
     this.version(1).stores({
-      morphemes: "++id,l2,createdAtMillis,updatedAtMillis",
+      morphemes: "++id,l2,gloss,createdAtMillis,updatedAtMillis",
       cards: "++id,l1,l2,createdAtMillis,updatedAtMillis",
     })
   }
