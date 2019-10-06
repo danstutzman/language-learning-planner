@@ -3,21 +3,19 @@ import {Card} from '../storage/CardsStorage'
 import './CardView.css'
 import {Morpheme} from '../storage/MorphemesStorage'
 import {MorphemesProps} from '../storage/MorphemesStorage'
-import {PartialMorpheme} from '../storage/MorphemesStorage'
 
 interface Props {
   close: () => void
   card: Card
-  save: (card: Card, partialMorphemes: Array<PartialMorpheme>) => Promise<Card>
+  save: (card: Card) => Promise<Card>
   guessMorphemes: (l2: string) => Promise<Array<Morpheme>>
-  initialMorphemes: Array<PartialMorpheme>,
 }
 
 interface State {
   l1: string
   l2: string
   guessedMorphemes: Array<Morpheme>
-  partialMorphemes: Array<PartialMorpheme>
+  morphemes: Array<Morpheme>
 }
 
 export default class CardView extends React.PureComponent<Props, State> {
@@ -29,7 +27,7 @@ export default class CardView extends React.PureComponent<Props, State> {
       l1,
       l2,
       guessedMorphemes: [],
-      partialMorphemes: props.initialMorphemes.concat([{ l2: '', gloss: '' }]),
+      morphemes: props.card.morphemes.concat([{ l2: '', gloss: '' }]),
     }
   }
 
@@ -43,31 +41,31 @@ export default class CardView extends React.PureComponent<Props, State> {
     this.setState({ l2 })
   }
 
-  onChangePartialMorphemeL2 = (e: any) => {
+  onChangeMorphemeL2 = (e: any) => {
     const l2 = e.target.value
     const index = parseInt(e.target.getAttribute('data-index'), 10)
     this.setState(prev => {
-      if (index === prev.partialMorphemes.length - 1) {
+      if (index === prev.morphemes.length - 1) {
         this.props.guessMorphemes(l2).then(
           guessedMorphemes => this.setState({ guessedMorphemes }))
       }
       return {
-        partialMorphemes: prev.partialMorphemes.slice(0, index)
-          .concat([{ l2, gloss: prev.partialMorphemes[index].gloss }])
-          .concat(prev.partialMorphemes.slice(index + 1)),
+        morphemes: prev.morphemes.slice(0, index)
+          .concat([{ l2, gloss: prev.morphemes[index].gloss }])
+          .concat(prev.morphemes.slice(index + 1)),
       }
     })
     
   }
 
-  onChangePartialMorphemeGloss = (e: any) => {
+  onChangeMorphemeGloss = (e: any) => {
     const gloss = e.target.value
     const index = parseInt(e.target.getAttribute('data-index'), 10)
     this.setState(prev => ({
-      partialMorphemes: prev.partialMorphemes.slice(0, index)
-        .concat([{ l2: prev.partialMorphemes[index].l2, gloss }])
-        .concat(prev.partialMorphemes.slice(index + 1))
-        .concat((index === prev.partialMorphemes.length - 1) ?
+      morphemes: prev.morphemes.slice(0, index)
+        .concat([{ l2: prev.morphemes[index].l2, gloss }])
+        .concat(prev.morphemes.slice(index + 1))
+        .concat((index === prev.morphemes.length - 1) ?
           [{ l2: '', gloss: ''}] : []),
     }))
   }
@@ -75,8 +73,8 @@ export default class CardView extends React.PureComponent<Props, State> {
   onClickGuessedMorpheme = (e: any) => {
     const index = parseInt(e.target.getAttribute('data-index'), 10)
     this.setState(prev => ({
-      partialMorphemes: prev.partialMorphemes
-        .slice(0, prev.partialMorphemes.length - 1) // overwrite the last
+      morphemes: prev.morphemes
+        .slice(0, prev.morphemes.length - 1) // overwrite the last
         .concat([{
           l2: prev.guessedMorphemes[index].l2,
           gloss: prev.guessedMorphemes[index].gloss,
@@ -88,30 +86,30 @@ export default class CardView extends React.PureComponent<Props, State> {
     }))
   }
 
-  onClickDeletePartialMorpheme = (e: any) => {
+  onClickDeleteMorpheme = (e: any) => {
     const index = parseInt(e.target.getAttribute('data-index'), 10)
     this.setState(prev => ({
-      partialMorphemes: prev.partialMorphemes
+      morphemes: prev.morphemes
         .slice(0, index)
-        .concat(prev.partialMorphemes.slice(index + 1)),
+        .concat(prev.morphemes.slice(index + 1)),
       guessedMorphemes: [],
     }))
   }
 
-  onClickInsertPartialMorpheme = (e: any) => {
+  onClickInsertMorpheme = (e: any) => {
     const index = parseInt(e.target.getAttribute('data-index'), 10)
     this.setState(prev => ({
-      partialMorphemes: prev.partialMorphemes
+      morphemes: prev.morphemes
         .slice(0, index + 1)
         .concat([{ l2: '', gloss: '' }])
-        .concat(prev.partialMorphemes.slice(index + 1)),
+        .concat(prev.morphemes.slice(index + 1)),
       guessedMorphemes: [],
     }))
   }
 
   onClickSave = () => {
-    const { l1, l2, partialMorphemes } = this.state
-    this.props.save({ ...this.props.card, l1, l2 }, partialMorphemes)
+    const { l1, l2, morphemes } = this.state
+    this.props.save({ ...this.props.card, l1, l2, morphemes })
   }
 
   render() {
@@ -119,7 +117,7 @@ export default class CardView extends React.PureComponent<Props, State> {
       l1,
       l2,
       guessedMorphemes,
-      partialMorphemes,
+      morphemes,
     } = this.state
     const { card, close } = this.props
 
@@ -151,32 +149,32 @@ export default class CardView extends React.PureComponent<Props, State> {
           </tr>
         </thead>
         <tbody>
-          {partialMorphemes.map((m: PartialMorpheme, i: number) => <tr key={i}>
+          {morphemes.map((m: Morpheme, i: number) => <tr key={i}>
             <td>
               <input
                 type='text'
                 value={m.l2}
                 data-index={i}
-                onChange={this.onChangePartialMorphemeL2} />
+                onChange={this.onChangeMorphemeL2} />
             </td>
             <td>
               <input
                 type='text'
                 value={m.gloss}
                 data-index={i}
-                onChange={this.onChangePartialMorphemeGloss} />
+                onChange={this.onChangeMorphemeGloss} />
             </td>
             <td>
               <button
                 data-index={i}
-                onClick={this.onClickDeletePartialMorpheme}
-                disabled={i === partialMorphemes.length - 1}>Delete</button>
+                onClick={this.onClickDeleteMorpheme}
+                disabled={i === morphemes.length - 1}>Delete</button>
             </td>
             <td>
               <button
                 data-index={i}
-                onClick={this.onClickInsertPartialMorpheme}
-                disabled={i === partialMorphemes.length - 1}>Insert</button>
+                onClick={this.onClickInsertMorpheme}
+                disabled={i === morphemes.length - 1}>Insert</button>
             </td>
           </tr>)}
         </tbody>

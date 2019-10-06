@@ -1,13 +1,15 @@
 import * as EventEmitter from 'eventemitter3'
 import Db from './Db'
+import {Morpheme} from './MorphemesStorage'
 
 export interface Card {
   id?: number
   l1: string
   l2: string
+  morphemes?: Array<Morpheme>,
   morphemeIds: Array<number>,
-  createdAtMillis: number
-  updatedAtMillis: number
+  createdAtMillis?: number
+  updatedAtMillis?: number
 }
 
 export interface CardsProps {

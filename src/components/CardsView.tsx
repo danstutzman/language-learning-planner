@@ -1,33 +1,35 @@
-import { Card } from '../storage/CardsStorage'
-import { CardsProps } from '../storage/CardsStorage'
+import {Card} from '../storage/CardsStorage'
+import {CardList} from '../backend/Backend'
 import './CardsView.css'
 import * as React from 'react'
 
-export interface CardsViewProps {
+export interface Props {
   history: any,
-  cards: CardsProps
+  cardList: CardList | void
 }
 
-export default class CardsView extends React.PureComponent<CardsViewProps> {
+export default class CardsView extends React.PureComponent<Props> {
   onClickCard = (e: any) => {
     const id = e.currentTarget.getAttribute('data-id')
     this.props.history.push(`/cards/${id}`)
   }
 
   onClickNewCard = () => {
-    this.props.cards.createCard().then(card =>
-      this.props.history.push(`/cards/${card.id}`)
-    )
+    // this.props.cards.createCard().then(card =>
+    //   this.props.history.push(`/cards/${card.id}`)
+    // )
   }
 
   onClickDelete = (e: any) => {
-    e.stopPropagation()
-    const id: number = parseInt(e.target.getAttribute('data-id'), 10)
-    this.props.cards.deleteCard(id)
+    // e.stopPropagation()
+    // const id: number = parseInt(e.target.getAttribute('data-id'), 10)
+    // this.props.cards.deleteCard(id)
   }
 
   render() {
-    const cards: Array<Card> = Object.values(this.props.cards.cardById)
+    const { cardList } = this.props
+    const cards = cardList ? cardList.cards : []
+
     return <div>
       <h2>Cards</h2>
 
@@ -37,13 +39,11 @@ export default class CardsView extends React.PureComponent<CardsViewProps> {
             <th>ID</th>
             <th>L1</th>
             <th>L2</th>
-            <th>MorphemeIds</th>
-            <th>CreatedAt</th>
-            <th>UpdatedAt</th>
             <th>Delete</th>
           </tr>
         </thead>
         <tbody>
+          {cardList ? null : <tr><td>Loading...</td></tr>}
           {cards.map(card =>
             <tr
               key={card.id}
@@ -53,9 +53,6 @@ export default class CardsView extends React.PureComponent<CardsViewProps> {
               <td>{card.id}</td>
               <td>{card.l1}</td>
               <td>{card.l2}</td>
-              <td>{card.morphemeIds.join(',')}</td>
-              <td>{card.createdAtMillis}</td>
-              <td>{card.updatedAtMillis}</td>
               <td>
                 <button onClick={this.onClickDelete} data-id={card.id}>
                   Delete

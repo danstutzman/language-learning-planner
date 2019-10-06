@@ -6,19 +6,14 @@ export interface Morpheme {
   id?: number
   l2: string
   gloss: string
-  createdAtMillis: number
-  updatedAtMillis: number
-}
-
-export interface PartialMorpheme {
-  l2: string,
-  gloss: string,
+  createdAtMillis?: number
+  updatedAtMillis?: number
 }
 
 export interface MorphemesProps {
   createMorpheme: () => Promise<Morpheme>
   deleteMorpheme: (id: number) => Promise<void>
-  findOrCreateMorphemes: (partialMorphemes: Array<PartialMorpheme>) =>
+  findOrCreateMorphemes: (partialMorphemes: Array<Morpheme>) =>
     Promise<Array<Morpheme>>,
   guessMorphemes: (l2: string) => Promise<Array<Morpheme>>
   hasLoaded: boolean
@@ -46,16 +41,16 @@ export default class MorphemesStorage {
     }
     this.db = db
 
-    const morphemeById: {[id: number]: Morpheme} = {}
-    this.db.morphemes
-      .each((morpheme: Morpheme) => morphemeById[morpheme.id] = morpheme)
-      .then(() => {
-        this.props = { ...this.props, morphemeById, hasLoaded: true }
-        this.eventEmitter.emit('morphemes')
-      })
+    // const morphemeById: {[id: number]: Morpheme} = {}
+    // this.db.morphemes
+    //   .each((morpheme: Morpheme) => morphemeById[morpheme.id] = morpheme)
+    //   .then(() => {
+    //     this.props = { ...this.props, morphemeById, hasLoaded: true }
+    //     this.eventEmitter.emit('morphemes')
+    //   })
   }
 
-  findOrCreateMorphemes = async (partialMorphemes: Array<PartialMorpheme>):
+  findOrCreateMorphemes = async (partialMorphemes: Array<Morpheme>):
       Promise<Array<Morpheme>> => {
     const morphemes = []
     for (const partialMorpheme of partialMorphemes) {

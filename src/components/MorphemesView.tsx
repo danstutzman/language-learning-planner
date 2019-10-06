@@ -5,8 +5,7 @@ import * as React from 'react'
 
 export interface Props {
   history: any,
-  loading: boolean
-  morphemeList: MorphemeList
+  morphemeList: MorphemeList | void
 }
 
 export default class MorphemesView extends React.PureComponent<Props> {
@@ -29,7 +28,7 @@ export default class MorphemesView extends React.PureComponent<Props> {
   }
 
   render() {
-    const { loading, morphemeList } = this.props
+    const { morphemeList } = this.props
     const morphemes = morphemeList ? morphemeList.morphemes : []
 
     return <div>
@@ -47,7 +46,7 @@ export default class MorphemesView extends React.PureComponent<Props> {
           </tr>
         </thead>
         <tbody>
-          {loading && <tr><td><div>Loading...</div></td></tr>}
+          {morphemeList ? null : <tr><td>Loading...</td></tr>}
           {morphemes.map(morpheme =>
             <tr
               key={morpheme.id}

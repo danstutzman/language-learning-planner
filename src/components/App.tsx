@@ -1,5 +1,6 @@
 import {BackendProps} from '../backend/Backend'
 import {Card} from '../storage/CardsStorage'
+import {CardList} from '../backend/Backend'
 import {CardsProps} from '../storage/CardsStorage'
 import CardView from './CardView'
 import CardsView from './CardsView'
@@ -12,7 +13,6 @@ import {MorphemeList} from '../backend/Backend'
 import {MorphemesProps} from '../storage/MorphemesStorage'
 import MorphemeView from './MorphemeView'
 import MorphemesView from './MorphemesView'
-import {PartialMorpheme} from '../storage/MorphemesStorage'
 import * as React from 'react'
 import { Route } from 'react-router-dom'
 import {UploadsProps} from '../storage/UploadsStorage'
@@ -47,6 +47,30 @@ export default class App extends React.PureComponent<Props> {
       .then(uploads => this.props.backend.sync(uploads))
       .catch(e => console.warn('Sync error', e))
 
+  renderCardView = (args: any) => {
+    const id: number = parseInt(args.match.params.id, 10)
+    const promise = this.props.backend.showCard(id)
+    return React.createElement(() => {
+      const card = usePromise<Card>(promise).value
+      if (!card) { return <div>Loading...</div> }
+      return <CardView
+        close={args.history.goBack}
+        card={card}
+        guessMorphemes={() => Promise.resolve([])}
+        save={this.props.backend.updateCard} />
+    })
+  }
+
+  renderCardsView = (args: any) => {
+    const promise = this.props.backend.listCards()
+    return React.createElement(() => {
+      const cardList = usePromise<CardList>(promise).value
+      return <CardsView
+        cardList={cardList}
+        history={args.history} />
+    })
+  }
+
   renderDictionary = () =>
     <DictionaryScreen
       backend={this.props.backend}
@@ -57,12 +81,12 @@ export default class App extends React.PureComponent<Props> {
     const id: number = parseInt(args.match.params.id, 10)
     const promise = this.props.backend.showMorpheme(id)
     return React.createElement(() => {
-      const {value, loading} = usePromise<Morpheme>(promise)
+      const morpheme = usePromise<Morpheme>(promise).value
       const save = (morpheme: Morpheme) => Promise.resolve(morpheme)
-      if (loading) { return <div>Loading...</div> }
+      if (!morpheme) { return <div>Loading...</div> }
       return <MorphemeView
         close={args.history.goBack}
-        morpheme={value}
+        morpheme={morpheme}
         save={save} />
     })
   }
@@ -70,47 +94,13 @@ export default class App extends React.PureComponent<Props> {
   renderMorphemesView = (args: any) => {
     const promise = this.props.backend.listMorphemes()
     return React.createElement(() => {
-      const {value, loading} = usePromise<MorphemeList>(promise)
+      const morphemeList = usePromise<MorphemeList>(promise).value
       return <MorphemesView
         history={args.history}
-        loading={loading}
-        morphemeList={value} />
+        morphemeList={morphemeList} />
     })
   }
 
-  renderCardView = (args: any) => {
-    const { cards, morphemes } = this.props
-    const id: string = args.match.params.id
-
-    if (!cards.hasLoaded || !morphemes.hasLoaded) {
-      return <div>Loading...</div>
-    }
-
-    const card = cards.cardById[parseInt(id, 10)]
-    if (card) {
-      const initialMorphemes = card.morphemeIds.map(morphemeId =>
-        morphemes.morphemeById[morphemeId])
-      const save = (card: Card, partialMorphemes: Array<PartialMorpheme>) =>
-        morphemes.findOrCreateMorphemes(partialMorphemes)
-          .then(morphemes => cards.updateCard({
-            ...card,
-            morphemeIds: morphemes.map(m => m.id),
-          }))
-      return <CardView
-        close={args.history.goBack}
-        card={card}
-        initialMorphemes={initialMorphemes}
-        guessMorphemes={morphemes.guessMorphemes}
-        save={save} />
-    } else {
-      return <div>Not found</div>
-    }
-  }
-
-  renderCardsView = (args: any) =>
-    <CardsView
-      history={args.history}
-      cards={this.props.cards} />
 
   render() {
     return <HashRouter>

@@ -1,8 +1,9 @@
 import {NetworkState} from './Backend'
 
 export default function sendQuery(
+  method: string,
   apiUrl: string,
-  clientVersion: string,
+  body: {} | null,
   log: (event: string, details?: {}) => void,
   timeoutMillis: number,
   updateNetworkState: (networkState: NetworkState) => void,
@@ -22,10 +23,8 @@ export default function sendQuery(
       timeoutMillis)
 
     fetch(apiUrl, {
-      method: 'GET',
-      headers: {
-        'X-Client-Version': clientVersion,
-      },
+      method,
+      body: body ? JSON.stringify(body) : null,
     }).then(response => {
       if (!timedOut) {
         clearTimeout(timeout)

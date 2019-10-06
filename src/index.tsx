@@ -29,19 +29,17 @@ async function main() {
   dictionaryStorage.eventEmitter.on('dictionary', render)
   const uploadsStorage = new UploadsStorage(db)
 
-  const match = /main\.([0-9a-f]+)\.js/.exec(new Error().stack.split('\n')[0])
-  const clientVersion = match ? match[1] : 'unknown'
-
   const { protocol, host } = window.location
   const apiUrl = (host === 'localhost:3000') ?
     'http://localhost:8080/api' : `${protocol}//${host}/api`
-  const backend = new Backend(apiUrl, clientVersion, uploadsStorage.log)
+  const backend = new Backend(apiUrl, uploadsStorage.log)
   backend.eventEmitter.on('networkState', render)
   backend.eventEmitter.on('sync', success => {
     uploadsStorage.deleteUploads(success.uploadIdsToDelete)
     cardsStorage.updateCards(success.cards)
     morphemesStorage.updateMorphemes(success.morphemes)
   })
+  backend.eventEmitter.on('cardsAndMorphemes', render)
 
   function render() {
     ReactDOM.render(<App
