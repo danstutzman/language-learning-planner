@@ -1,26 +1,22 @@
 import * as React from 'react'
 import {Card} from '../backend/Backend'
 import './CardView.css'
+import {EMPTY_MORPHEME} from '../backend/Backend'
 import {Morpheme} from '../backend/Backend'
 import {MorphemeList} from '../backend/Backend'
+import MorphemeRow from './MorphemeRow'
 
 interface Props {
   close: () => void
   card: Card
-  save: (card: Card) => Promise<Card>
   guessMorphemes: (l2: string) => Promise<MorphemeList>
+  save: (card: Card) => Promise<Card>
 }
 
 interface State {
   l1: string
   l2: string
-  guessedMorphemes: MorphemeList
   morphemes: Array<Morpheme>
-}
-
-const NO_GUESSED_MORPHEMES: MorphemeList = {
-  morphemes: [],
-  countWithoutLimit: 0,
 }
 
 export default class CardView extends React.PureComponent<Props, State> {
@@ -31,7 +27,6 @@ export default class CardView extends React.PureComponent<Props, State> {
     this.state = {
       l1,
       l2,
-      guessedMorphemes: NO_GUESSED_MORPHEMES,
       morphemes: props.card.morphemes.concat([{ l2: '', gloss: '' }]),
     }
   }
@@ -46,70 +41,30 @@ export default class CardView extends React.PureComponent<Props, State> {
     this.setState({ l2 })
   }
 
-  onChangeMorphemeL2 = (e: any) => {
-    const l2 = e.target.value
-    const index = parseInt(e.target.getAttribute('data-index'), 10)
-    this.setState(prev => {
-      if (index === prev.morphemes.length - 1) {
-        this.props.guessMorphemes(l2).then(
-          guessedMorphemes => this.setState({ guessedMorphemes }))
-      }
-      return {
-        morphemes: prev.morphemes.slice(0, index)
-          .concat([{ l2, gloss: prev.morphemes[index].gloss }])
-          .concat(prev.morphemes.slice(index + 1)),
-      }
-    })
-  }
-
-  onChangeMorphemeGloss = (e: any) => {
-    const gloss = e.target.value
-    const index = parseInt(e.target.getAttribute('data-index'), 10)
+  updateMorpheme = (morpheme: Morpheme, numMorpheme: number) => {
     this.setState(prev => ({
-      morphemes: prev.morphemes.slice(0, index)
-        .concat([{ l2: prev.morphemes[index].l2, gloss }])
-        .concat(prev.morphemes.slice(index + 1))
-        .concat((index === prev.morphemes.length - 1) ?
-          [{ l2: '', gloss: ''}] : []),
+      morphemes: prev.morphemes.slice(0, numMorpheme)
+        .concat([morpheme])
+        .concat(prev.morphemes.slice(numMorpheme + 1))
+        .concat((numMorpheme === prev.morphemes.length - 1) ?
+           [EMPTY_MORPHEME] : []),
     }))
   }
 
-  onClickGuessedMorpheme = (e: any) => {
-    const index = parseInt(e.target.getAttribute('data-index'), 10)
+  onClickDeleteMorpheme = (numMorpheme: number) =>
     this.setState(prev => ({
       morphemes: prev.morphemes
-        .slice(0, prev.morphemes.length - 1) // overwrite the last
-        .concat([{
-          l2: prev.guessedMorphemes.morphemes[index].l2,
-          gloss: prev.guessedMorphemes.morphemes[index].gloss,
-        }, {
-          l2: '',
-          gloss: '',
-        }]),
-      guessedMorphemes: NO_GUESSED_MORPHEMES,
+        .slice(0, numMorpheme)
+        .concat(prev.morphemes.slice(numMorpheme + 1)),
     }))
-  }
 
-  onClickDeleteMorpheme = (e: any) => {
-    const index = parseInt(e.target.getAttribute('data-index'), 10)
+  onClickInsertMorpheme = (numMorpheme: number) =>
     this.setState(prev => ({
       morphemes: prev.morphemes
-        .slice(0, index)
-        .concat(prev.morphemes.slice(index + 1)),
-      guessedMorphemes: NO_GUESSED_MORPHEMES,
+        .slice(0, numMorpheme + 1)
+        .concat([EMPTY_MORPHEME])
+        .concat(prev.morphemes.slice(numMorpheme + 1)),
     }))
-  }
-
-  onClickInsertMorpheme = (e: any) => {
-    const index = parseInt(e.target.getAttribute('data-index'), 10)
-    this.setState(prev => ({
-      morphemes: prev.morphemes
-        .slice(0, index + 1)
-        .concat([{ l2: '', gloss: '' }])
-        .concat(prev.morphemes.slice(index + 1)),
-      guessedMorphemes: NO_GUESSED_MORPHEMES,
-    }))
-  }
 
   onClickSave = () => {
     const { l1, l2, morphemes } = this.state
@@ -117,12 +72,7 @@ export default class CardView extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const {
-      l1,
-      l2,
-      guessedMorphemes,
-      morphemes,
-    } = this.state
+    const { l1, l2, morphemes } = this.state
     const { card, close } = this.props
 
     return <div>
@@ -153,50 +103,19 @@ export default class CardView extends React.PureComponent<Props, State> {
           </tr>
         </thead>
         <tbody>
-          {morphemes.map((m: Morpheme, i: number) => <tr key={i}>
-            <td>
-              <input
-                type='text'
-                value={m.l2}
-                data-index={i}
-                onChange={this.onChangeMorphemeL2} />
-            </td>
-            <td>
-              <input
-                type='text'
-                value={m.gloss}
-                data-index={i}
-                onChange={this.onChangeMorphemeGloss} />
-            </td>
-            <td>
-              <button
-                data-index={i}
-                onClick={this.onClickDeleteMorpheme}
-                disabled={i === morphemes.length - 1}>Delete</button>
-            </td>
-            <td>
-              <button
-                data-index={i}
-                onClick={this.onClickInsertMorpheme}
-                disabled={i === morphemes.length - 1}>Insert</button>
-            </td>
-          </tr>)}
+          {morphemes.map((m: Morpheme, i: number) =>
+            <MorphemeRow
+              deleteRow={this.onClickDeleteMorpheme}
+              guessMorphemes={this.props.guessMorphemes}
+              morpheme={m}
+              insertRowAfter={this.onClickInsertMorpheme}
+              isLast={i == morphemes.length - 1}
+              key={i}
+              numMorpheme={i}
+              updateMorpheme={this.updateMorpheme} />)}
         </tbody>
       </table>
 
-      <table style={{border: '1px black solid'}}>
-        <tbody>
-          {guessedMorphemes.morphemes.map((m: Morpheme, i: number) =>
-            <tr key={i} className='darken-on-hover'>
-              <td onClick={this.onClickGuessedMorpheme} data-index={i}>
-                {m.l2}
-              </td>
-              <td onClick={this.onClickGuessedMorpheme} data-index={i}>
-                {m.gloss}
-              </td>
-            </tr>)}
-        </tbody>
-      </table>
 
       <button onClick={this.onClickSave}>Save</button>
     </div>

@@ -20,6 +20,11 @@ export interface Card {
   morphemes: Array<Morpheme>
 }
 
+export const EMPTY_MORPHEME_LIST: MorphemeList = {
+  morphemes: [],
+  countWithoutLimit: 0,
+}
+
 export interface BackendProps {
   createMorpheme: (morpheme: Morpheme) => Promise<Morpheme>,
   deleteMorpheme: (id: number) => Promise<void>,
