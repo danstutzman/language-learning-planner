@@ -9,16 +9,13 @@ export interface Props {
 }
 
 export default class MorphemesView extends React.PureComponent<Props> {
-
   onClickMorpheme = (e: any) => {
     const id = e.currentTarget.getAttribute('data-id')
     this.props.history.push(`/morphemes/${id}`)
   }
 
   onClickNewMorpheme = () => {
-    // this.props.morphemes.createMorpheme().then(morpheme =>
-    //   this.props.history.push(`/morphemes/${morpheme.id}`)
-    // )
+    this.props.history.push('/morphemes/new')
   }
 
   onClickDelete = (e: any) => {
@@ -40,8 +37,6 @@ export default class MorphemesView extends React.PureComponent<Props> {
             <th>ID</th>
             <th>L2</th>
             <th>Gloss</th>
-            <th>CreatedAt</th>
-            <th>UpdatedAt</th>
             <th>Delete</th>
           </tr>
         </thead>
@@ -56,8 +51,6 @@ export default class MorphemesView extends React.PureComponent<Props> {
               <td>{morpheme.id}</td>
               <td>{morpheme.l2}</td>
               <td>{morpheme.gloss}</td>
-              <td>{morpheme.createdAtMillis}</td>
-              <td>{morpheme.updatedAtMillis}</td>
               <td>
                 <button onClick={this.onClickDelete} data-id={morpheme.id}>
                   Delete

@@ -45,7 +45,7 @@ export default class MorphemeView extends React.PureComponent<Props, State> {
       </h2>
 
       <b>L2</b>
-      <input type='text' value={l2} onChange={this.onChangeL2}/>
+      <input type='text' value={l2} onChange={this.onChangeL2} autoFocus/>
       <br/>
 
       <b>Gloss</b>

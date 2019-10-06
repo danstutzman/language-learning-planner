@@ -10,6 +10,7 @@ import {WordPair} from '../storage/DictionaryStorage'
 const FETCH_TIMEOUT_MILLIS = 5000
 
 export interface BackendProps {
+  createMorpheme: (morpheme: Morpheme) => Promise<Morpheme>,
   downloadDictionary: () => Promise<Array<WordPair>>
   guessMorphemes: (l2: string) => Promise<MorphemeList>
   listCards: () => Promise<CardList>
@@ -18,6 +19,7 @@ export interface BackendProps {
   showMorpheme: (id: number) => Promise<Morpheme>
   sync: (uploads: Array<Upload>) => Promise<void>
   updateCard: (card: Card) => Promise<Card>,
+  updateMorpheme: (morpheme: Morpheme) => Promise<Morpheme>,
 }
 
 export interface CardList {
@@ -50,6 +52,7 @@ export default class Backend {
     this.listMorphemesCache = {}
     this.log = log
     this.props = {
+      createMorpheme: this.createMorpheme,
       downloadDictionary: this.downloadDictionary,
       guessMorphemes: this.guessMorphemes,
       listCards: this.listCards,
@@ -58,6 +61,7 @@ export default class Backend {
       showMorpheme: this.showMorpheme,
       sync: this.sync,
       updateCard: this.updateCard,
+      updateMorpheme: this.updateMorpheme,
     }
     this.showCardCache = {}
     this.showMorphemeCache = {}
@@ -155,16 +159,33 @@ export default class Backend {
 
     this.listCardsCache = {}
     this.listMorphemesCache = {}
-    this.showCardCache = {}
     this.showMorphemeCache = {}
     this.showCardCache = { [card.id]: promise }
 
     return promise
   }
 
+  createMorpheme = (morpheme: Morpheme): Promise<Morpheme> => {
+    return sendQuery('POST', `${this.baseUrl}/morphemes`, morpheme,
+      this.log, FETCH_TIMEOUT_MILLIS)
+  }
+
+  updateMorpheme = (morpheme: Morpheme): Promise<Morpheme> => {
+    const promise = sendQuery('PUT',
+      `${this.baseUrl}/morphemes/${morpheme.id}`, morpheme,
+      this.log, FETCH_TIMEOUT_MILLIS)
+
+    this.listCardsCache = {}
+    this.listMorphemesCache = {}
+    this.showCardCache = {}
+    this.showMorphemeCache = { [morpheme.id]: promise }
+
+    return promise
+  }
+
   guessMorphemes = (l2: string): Promise<MorphemeList> => {
-    return Promise.resolve().then(() => sendQuery('GET',
+    return sendQuery('GET',
       `${this.baseUrl}/morphemes?prefix=${encodeURIComponent(l2)}`,
-        null, this.log, FETCH_TIMEOUT_MILLIS))
+      null, this.log, FETCH_TIMEOUT_MILLIS)
   }
 }

@@ -1,4 +1,4 @@
-import {BackendProps} from '../backend/Backend'
+import Backend, {BackendProps} from '../backend/Backend'
 import {Card} from '../storage/CardsStorage'
 import {CardList} from '../backend/Backend'
 import {CardsProps} from '../storage/CardsStorage'
@@ -6,6 +6,7 @@ import CardView from './CardView'
 import CardsView from './CardsView'
 import {DictionaryProps} from '../storage/DictionaryStorage'
 import DictionaryScreen from './DictionaryScreen'
+import {EMPTY_MORPHEME} from '../storage/MorphemesStorage'
 import { HashRouter } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import {Morpheme} from '../storage/MorphemesStorage'
@@ -78,17 +79,30 @@ export default class App extends React.PureComponent<Props> {
       log={this.props.log} />
 
   renderMorphemeView = (args: any) => {
-    const id: number = parseInt(args.match.params.id, 10)
-    const promise = this.props.backend.showMorpheme(id)
-    return React.createElement(() => {
-      const morpheme = usePromise<Morpheme>(promise).value
-      const save = (morpheme: Morpheme) => Promise.resolve(morpheme)
-      if (!morpheme) { return <div>Loading...</div> }
+    const { id } = args.match.params
+    const { backend } = this.props
+
+    if (id === 'new') {
+      const save = (morpheme: Morpheme) =>
+        backend.createMorpheme(morpheme).then(morpheme => {
+          args.history.push(`/morphemes/${morpheme.id}`)
+          return morpheme
+        })
       return <MorphemeView
         close={args.history.goBack}
-        morpheme={morpheme}
+        morpheme={EMPTY_MORPHEME}
         save={save} />
-    })
+    } else {
+      const promise = backend.showMorpheme(parseInt(id, 10))
+      return React.createElement(() => {
+        const morpheme = usePromise<Morpheme>(promise).value
+        if (!morpheme) { return <div>Loading...</div> }
+        return <MorphemeView
+          close={args.history.goBack}
+          morpheme={morpheme}
+          save={backend.updateMorpheme} />
+      })
+    }
   }
 
   renderMorphemesView = (args: any) => {

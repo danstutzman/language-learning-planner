@@ -10,6 +10,11 @@ export interface Morpheme {
   updatedAtMillis?: number
 }
 
+export const EMPTY_MORPHEME = {
+  l2: '',
+  gloss: '',
+}
+
 export interface MorphemesProps {
   createMorpheme: () => Promise<Morpheme>
   deleteMorpheme: (id: number) => Promise<void>
