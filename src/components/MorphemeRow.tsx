@@ -61,6 +61,12 @@ export default class MorphemeRow extends React.PureComponent<Props, State> {
     this.props.guessMorphemes(this.props.morpheme.l2)
       .then(guessedMorphemes => this.setState({ guessedMorphemes }))
 
+  onKeyDown = (e: any) => {
+    if (e.keyCode === 27) { // escape key
+      this.setState({ guessedMorphemes: EMPTY_MORPHEME_LIST })
+    }
+  }
+
   render() {
     return <React.Fragment key={this.props.numMorpheme}>
       <tr key={this.props.numMorpheme}>
@@ -70,7 +76,8 @@ export default class MorphemeRow extends React.PureComponent<Props, State> {
             value={this.props.morpheme.l2}
             onBlur={this.onBlurL2}
             onChange={this.onChangeL2}
-            onFocus={this.onFocusL2} />
+            onFocus={this.onFocusL2}
+            onKeyDown={this.onKeyDown} />
         </td>
         <td>
           <input
