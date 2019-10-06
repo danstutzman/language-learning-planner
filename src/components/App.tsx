@@ -8,6 +8,7 @@ import DictionaryScreen from './DictionaryScreen'
 import { HashRouter } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import {Morpheme} from '../storage/MorphemesStorage'
+import {MorphemeList} from '../backend/Backend'
 import {MorphemesProps} from '../storage/MorphemesStorage'
 import MorphemeView from './MorphemeView'
 import MorphemesView from './MorphemesView'
@@ -15,6 +16,7 @@ import {PartialMorpheme} from '../storage/MorphemesStorage'
 import * as React from 'react'
 import { Route } from 'react-router-dom'
 import {UploadsProps} from '../storage/UploadsStorage'
+import usePromise from 'react-promise'
 
 interface Props {
   backend: BackendProps,
@@ -52,30 +54,29 @@ export default class App extends React.PureComponent<Props> {
       log={this.props.log} />
 
   renderMorphemeView = (args: any) => {
-    const { morphemes } = this.props
-    const id: string = args.match.params.id
-
-    if (!morphemes.hasLoaded) {
-      return <div>Loading...</div>
-    }
-
-    const morpheme = morphemes.morphemeById[parseInt(id, 10)]
-    if (morpheme) {
-      const save = (morpheme: Morpheme) => morphemes.updateMorpheme(morpheme)
+    const id: number = parseInt(args.match.params.id, 10)
+    const promise = this.props.backend.showMorpheme(id)
+    return React.createElement(() => {
+      const {value, loading} = usePromise<Morpheme>(promise)
+      const save = (morpheme: Morpheme) => Promise.resolve(morpheme)
+      if (loading) { return <div>Loading...</div> }
       return <MorphemeView
         close={args.history.goBack}
-        morpheme={morpheme}
+        morpheme={value}
         save={save} />
-    } else {
-      return <div>Not found</div>
-    }
+    })
   }
 
-
-  renderMorphemesView = (args: any) =>
-    <MorphemesView
-      history={args.history}
-      morphemes={this.props.morphemes} />
+  renderMorphemesView = (args: any) => {
+    const promise = this.props.backend.listMorphemes()
+    return React.createElement(() => {
+      const {value, loading} = usePromise<MorphemeList>(promise)
+      return <MorphemesView
+        history={args.history}
+        loading={loading}
+        morphemeList={value} />
+    })
+  }
 
   renderCardView = (args: any) => {
     const { cards, morphemes } = this.props

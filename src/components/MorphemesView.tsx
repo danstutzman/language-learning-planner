@@ -1,33 +1,37 @@
 import {Morpheme} from '../storage/MorphemesStorage'
+import {MorphemeList} from '../backend/Backend'
 import {MorphemesProps} from '../storage/MorphemesStorage'
 import * as React from 'react'
 
-export interface MorphemesViewProps {
+export interface Props {
   history: any,
-  morphemes: MorphemesProps
+  loading: boolean
+  morphemeList: MorphemeList
 }
 
-export default class MorphemesView extends React.PureComponent<MorphemesViewProps> {
+export default class MorphemesView extends React.PureComponent<Props> {
+
   onClickMorpheme = (e: any) => {
     const id = e.currentTarget.getAttribute('data-id')
     this.props.history.push(`/morphemes/${id}`)
   }
 
   onClickNewMorpheme = () => {
-    this.props.morphemes.createMorpheme().then(morpheme =>
-      this.props.history.push(`/morphemes/${morpheme.id}`)
-    )
+    // this.props.morphemes.createMorpheme().then(morpheme =>
+    //   this.props.history.push(`/morphemes/${morpheme.id}`)
+    // )
   }
 
   onClickDelete = (e: any) => {
-    e.stopPropagation()
-    const id: number = parseInt(e.target.getAttribute('data-id'), 10)
-    this.props.morphemes.deleteMorpheme(id)
+    // e.stopPropagation()
+    // const id: number = parseInt(e.target.getAttribute('data-id'), 10)
+    // this.props.morphemes.deleteMorpheme(id)
   }
 
   render() {
-    const morphemes: Array<Morpheme> =
-      Object.values(this.props.morphemes.morphemeById)
+    const { loading, morphemeList } = this.props
+    const morphemes = morphemeList ? morphemeList.morphemes : []
+
     return <div>
       <h2>Morphemes</h2>
 
@@ -43,6 +47,7 @@ export default class MorphemesView extends React.PureComponent<MorphemesViewProp
           </tr>
         </thead>
         <tbody>
+          {loading && <tr><td><div>Loading...</div></td></tr>}
           {morphemes.map(morpheme =>
             <tr
               key={morpheme.id}
