@@ -1,3 +1,6 @@
 .darken-on-hover:hover {
   background-color: #ccc;
 }
+.highlighted {
+  background-color: #ccc;
+}

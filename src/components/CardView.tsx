@@ -14,6 +14,7 @@ interface Props {
 }
 
 interface State {
+  focusedNumMorpheme: number
   l1: string
   l2: string
   morphemes: Array<Morpheme>
@@ -25,11 +26,15 @@ export default class CardView extends React.PureComponent<Props, State> {
 
     const { l1, l2 } = props.card
     this.state = {
+      focusedNumMorpheme: -1,
       l1,
       l2,
       morphemes: props.card.morphemes.concat([{ l2: '', gloss: '' }]),
     }
   }
+
+  moveFocus = (numMorpheme: number) =>
+    this.setState({ focusedNumMorpheme: numMorpheme + 1 })
 
   onChangeL1 = (e: any) => {
     const l1 = e.target.value
@@ -109,13 +114,14 @@ export default class CardView extends React.PureComponent<Props, State> {
               guessMorphemes={this.props.guessMorphemes}
               morpheme={m}
               insertRowAfter={this.onClickInsertMorpheme}
+              isFocused={i == this.state.focusedNumMorpheme}
               isLast={i == morphemes.length - 1}
               key={i}
+              moveFocus={this.moveFocus}
               numMorpheme={i}
               updateMorpheme={this.updateMorpheme} />)}
         </tbody>
       </table>
-
 
       <button onClick={this.onClickSave}>Save</button>
     </div>
