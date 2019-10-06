@@ -76,6 +76,7 @@ export default class App extends React.PureComponent<Props> {
     return React.createElement(() => {
       const morphemeList = usePromise<MorphemeList>(promise).value
       return <MorphemesView
+        deleteMorpheme={this.props.backend.deleteMorpheme}
         history={args.history}
         morphemeList={morphemeList} />
     })

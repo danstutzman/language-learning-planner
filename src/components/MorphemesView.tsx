@@ -3,6 +3,7 @@ import {MorphemeList} from '../backend/Backend'
 import * as React from 'react'
 
 export interface Props {
+  deleteMorpheme: (id: number) => Promise<void>,
   history: any,
   morphemeList: MorphemeList | void
 }
@@ -18,9 +19,9 @@ export default class MorphemesView extends React.PureComponent<Props> {
   }
 
   onClickDelete = (e: any) => {
-    // e.stopPropagation()
-    // const id: number = parseInt(e.target.getAttribute('data-id'), 10)
-    // this.props.morphemes.deleteMorpheme(id)
+    e.stopPropagation()
+    const id: number = parseInt(e.target.getAttribute('data-id'), 10)
+    this.props.deleteMorpheme(id)
   }
 
   render() {

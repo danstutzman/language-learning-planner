@@ -21,8 +21,15 @@ export default function sendQuery(
     }).then(response => {
       if (!timedOut) {
         clearTimeout(timeout)
-        const successPromise = handleResponse(response)
-        resolve(successPromise)
+
+        if (response.status === 204) {
+          resolve()
+        } else if (response.status === 200) {
+          const successPromise = handleResponse(response)
+          resolve(successPromise)
+        } else {
+          reject(new Error(`Got ${response.status} status`))
+        }
       }
     }).catch(e => {
       clearTimeout(timeout)

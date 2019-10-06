@@ -2,7 +2,6 @@ import {Card} from '../backend/Backend'
 import * as EventEmitter from 'eventemitter3'
 import sendQuery from './sendQuery'
 
-
 export interface Morpheme {
   id?: number
   l2: string
@@ -23,6 +22,7 @@ export interface Card {
 
 export interface BackendProps {
   createMorpheme: (morpheme: Morpheme) => Promise<Morpheme>,
+  deleteMorpheme: (id: number) => Promise<void>,
   guessMorphemes: (l2: string) => Promise<MorphemeList>
   listCards: () => Promise<CardList>
   listMorphemes: () => Promise<MorphemeList>
@@ -58,6 +58,7 @@ export default class Backend {
     this.listMorphemesCache = {}
     this.props = {
       createMorpheme: this.createMorpheme,
+      deleteMorpheme: this.deleteMorpheme,
       guessMorphemes: this.guessMorphemes,
       listCards: this.listCards,
       listMorphemes: this.listMorphemes,
@@ -68,6 +69,12 @@ export default class Backend {
     }
     this.showCardCache = {}
     this.showMorphemeCache = {}
+  }
+
+  refresh = (promise: any): any => {
+    this.props = { ...this.props } // so React notices change
+    this.eventEmitter.emit('cardsAndMorphemes')
+    return promise
   }
 
   listCards = (): Promise<CardList> => {
@@ -137,21 +144,18 @@ export default class Backend {
   updateCard = async (card: Card): Promise<Card> => {
     const promise =
       sendQuery('PUT', `${this.baseUrl}/cards/${card.id}`, card)
-        .then(card => {
-          this.eventEmitter.emit('cardsAndMorphemes')
-          return card
-        })
+        .then(this.refresh)
 
     this.listCardsCache = {}
     this.listMorphemesCache = {}
     this.showMorphemeCache = {}
     this.showCardCache = { [card.id]: promise }
-
-    return promise
+    return promise.then(this.refresh)
   }
 
   createMorpheme = (morpheme: Morpheme): Promise<Morpheme> => {
     return sendQuery('POST', `${this.baseUrl}/morphemes`, morpheme)
+      .then(this.refresh)
   }
 
   updateMorpheme = (morpheme: Morpheme): Promise<Morpheme> => {
@@ -162,13 +166,22 @@ export default class Backend {
     this.listMorphemesCache = {}
     this.showCardCache = {}
     this.showMorphemeCache = { [morpheme.id]: promise }
-
-    return promise
+    return promise.then(this.refresh)
   }
 
-  guessMorphemes = (l2: string): Promise<MorphemeList> => {
-    return sendQuery('GET',
+  deleteMorpheme = (id: number): Promise<void> => {
+    this.listCardsCache = {}
+    this.listMorphemesCache = {}
+    this.showCardCache = {}
+    this.showMorphemeCache = {}
+
+    const promise = sendQuery(
+      'DELETE', `${this.baseUrl}/morphemes/${id}`, null)
+    return promise.then(this.refresh)
+  }
+
+  guessMorphemes = (l2: string): Promise<MorphemeList> =>
+    sendQuery('GET',
       `${this.baseUrl}/morphemes?prefix=${encodeURIComponent(l2)}`,
       null)
-  }
 }
