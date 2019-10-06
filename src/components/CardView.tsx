@@ -1,9 +1,8 @@
 import * as React from 'react'
-import {Card} from '../storage/CardsStorage'
+import {Card} from '../backend/Backend'
 import './CardView.css'
-import {Morpheme} from '../storage/MorphemesStorage'
+import {Morpheme} from '../backend/Backend'
 import {MorphemeList} from '../backend/Backend'
-import {MorphemesProps} from '../storage/MorphemesStorage'
 
 interface Props {
   close: () => void

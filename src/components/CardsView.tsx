@@ -1,4 +1,4 @@
-import {Card} from '../storage/CardsStorage'
+import {Card} from '../backend/Backend'
 import {CardList} from '../backend/Backend'
 import './CardsView.css'
 import * as React from 'react'

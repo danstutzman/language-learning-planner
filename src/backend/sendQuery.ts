@@ -1,22 +1,19 @@
+const TIMEOUT_MILLIS = 5000
 
 export default function sendQuery(
   method: string,
   apiUrl: string,
-  body: {} | null,
-  log: (event: string, details?: {}) => void,
-  timeoutMillis: number,
+  body: {} | null
 ): Promise<any> {
   return new Promise((resolve, reject) => {
-    log('SyncStart')
-
     let timedOut = false
     const timeout = setTimeout(
       () => {
         timedOut = true
-        log('SyncTimeout', { timeout: timeoutMillis })
+        console.log('SyncTimeout', { timeout: TIMEOUT_MILLIS })
         reject(new Error('TIMEOUT'))
       },
-      timeoutMillis)
+      TIMEOUT_MILLIS)
 
     fetch(apiUrl, {
       method,
@@ -24,13 +21,13 @@ export default function sendQuery(
     }).then(response => {
       if (!timedOut) {
         clearTimeout(timeout)
-        const successPromise = handleResponse(response, log)
+        const successPromise = handleResponse(response)
         resolve(successPromise)
       }
     }).catch(e => {
       clearTimeout(timeout)
       if (e.message === 'Failed to fetch') {
-        log('SyncFailure', e)
+        console.error(e)
         reject(new Error('BAD_RESPONSE'))
       } else {
         reject(e)
@@ -39,13 +36,10 @@ export default function sendQuery(
   })
 }
 
-function handleResponse(
-  response: Response,
-  log: (event: string, details?: {}) => void,
-): Promise<any> {
+function handleResponse(response: Response): Promise<any> {
   return response.text().then(text => {
     if (!response.ok) {
-      log('SyncFailure', {
+      console.error('SyncFailure', {
         status: response.status,
         text: response.text,
       })
@@ -56,11 +50,9 @@ function handleResponse(
     try {
       parsed = JSON.parse(text)
     } catch (e) {
-      log('SyncFailure', { error: e })
+      console.error('SyncFailure', { error: e })
       throw new Error('BAD_RESPONSE_JSON')
     }
-
-    log('SyncSuccess')
 
     return parsed
   })

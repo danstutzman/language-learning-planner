@@ -1,23 +1,33 @@
-import {Card} from '../storage/CardsStorage'
-import downloadDictionary from './downloadDictionary'
+import {Card} from '../backend/Backend'
 import * as EventEmitter from 'eventemitter3'
-import {Morpheme} from '../storage/MorphemesStorage'
 import sendQuery from './sendQuery'
-import sync from './sync'
-import {Upload} from '../storage/UploadsStorage'
-import {WordPair} from '../storage/DictionaryStorage'
 
-const FETCH_TIMEOUT_MILLIS = 5000
+
+export interface Morpheme {
+  id?: number
+  l2: string
+  gloss: string
+}
+
+export const EMPTY_MORPHEME: Morpheme = {
+  l2: '',
+  gloss: '',
+}
+
+export interface Card {
+  id?: number
+  l1: string
+  l2: string
+  morphemes: Array<Morpheme>
+}
 
 export interface BackendProps {
   createMorpheme: (morpheme: Morpheme) => Promise<Morpheme>,
-  downloadDictionary: () => Promise<Array<WordPair>>
   guessMorphemes: (l2: string) => Promise<MorphemeList>
   listCards: () => Promise<CardList>
   listMorphemes: () => Promise<MorphemeList>
   showCard: (id: number) => Promise<Card>
   showMorpheme: (id: number) => Promise<Morpheme>
-  sync: (uploads: Array<Upload>) => Promise<void>
   updateCard: (card: Card) => Promise<Card>,
   updateMorpheme: (morpheme: Morpheme) => Promise<Morpheme>,
 }
@@ -37,46 +47,28 @@ export default class Backend {
   baseUrl: string
   listCardsCache: {[query: string]: Promise<CardList>}
   listMorphemesCache: {[query: string]: Promise<MorphemeList>}
-  log: (event: string, details?: {}) => void
   props: BackendProps
   showCardCache: {[id: number]: Promise<Card>}
   showMorphemeCache: {[id: number]: Promise<Morpheme>}
 
-  constructor(
-    baseUrl: string,
-    log: (event: string, details?: {}) => void
-  ) {
+  constructor(baseUrl: string) {
     this.eventEmitter = new EventEmitter()
     this.baseUrl = baseUrl
     this.listCardsCache = {}
     this.listMorphemesCache = {}
-    this.log = log
     this.props = {
       createMorpheme: this.createMorpheme,
-      downloadDictionary: this.downloadDictionary,
       guessMorphemes: this.guessMorphemes,
       listCards: this.listCards,
       listMorphemes: this.listMorphemes,
       showCard: this.showCard,
       showMorpheme: this.showMorpheme,
-      sync: this.sync,
       updateCard: this.updateCard,
       updateMorpheme: this.updateMorpheme,
     }
     this.showCardCache = {}
     this.showMorphemeCache = {}
   }
-
-  sync = (uploads: Array<Upload>): Promise<void> =>
-    sync(uploads, `${this.baseUrl}/sync-cards`, '',
-      this.log, FETCH_TIMEOUT_MILLIS)
-      .then(success => this.eventEmitter.emit('sync', success))
-      .then(() => {})
-
-  downloadDictionary = (): Promise<Array<WordPair>> =>
-    downloadDictionary(
-      `${this.baseUrl}/download-dictionary`, '',
-      this.log, FETCH_TIMEOUT_MILLIS)
 
   listCards = (): Promise<CardList> => {
     const query = '/cards'
@@ -85,9 +77,7 @@ export default class Backend {
       return listPromise
     }
 
-    listPromise = Promise.resolve().then(() =>
-      sendQuery('GET', `${this.baseUrl}/cards`, null,
-        this.log, FETCH_TIMEOUT_MILLIS))
+    listPromise = sendQuery('GET', `${this.baseUrl}/cards`, null)
     this.listCardsCache[query] = listPromise
 
     listPromise.then(list => {
@@ -107,8 +97,7 @@ export default class Backend {
     }
 
     listPromise = Promise.resolve().then(() => 
-      sendQuery('GET', `${this.baseUrl}/morphemes`, null,
-        this.log, FETCH_TIMEOUT_MILLIS))
+      sendQuery('GET', `${this.baseUrl}/morphemes`, null))
     this.listMorphemesCache[query] = listPromise
 
     listPromise.then(list => {
@@ -126,9 +115,7 @@ export default class Backend {
       return cardPromise
     }
 
-    cardPromise = Promise.resolve().then(() => 
-      sendQuery('GET', `${this.baseUrl}/cards/${id}`, null,
-        this.log, FETCH_TIMEOUT_MILLIS))
+    cardPromise = sendQuery('GET', `${this.baseUrl}/cards/${id}`, null)
     this.showCardCache[id] = cardPromise
 
     return cardPromise
@@ -140,22 +127,20 @@ export default class Backend {
       return morphemePromise
     }
 
-    morphemePromise = Promise.resolve().then(() => 
-      sendQuery('GET', `${this.baseUrl}/morphemes/${id}`, null,
-        this.log, FETCH_TIMEOUT_MILLIS))
+    morphemePromise =
+      sendQuery('GET', `${this.baseUrl}/morphemes/${id}`, null)
     this.showMorphemeCache[id] = morphemePromise
 
     return morphemePromise
   }
 
   updateCard = async (card: Card): Promise<Card> => {
-    const promise = Promise.resolve().then(() => sendQuery(
-        'PUT', `${this.baseUrl}/cards/${card.id}`, card,
-        this.log, FETCH_TIMEOUT_MILLIS))
-      .then(card => {
-        this.eventEmitter.emit('cardsAndMorphemes')
-        return card
-      })
+    const promise =
+      sendQuery('PUT', `${this.baseUrl}/cards/${card.id}`, card)
+        .then(card => {
+          this.eventEmitter.emit('cardsAndMorphemes')
+          return card
+        })
 
     this.listCardsCache = {}
     this.listMorphemesCache = {}
@@ -166,14 +151,12 @@ export default class Backend {
   }
 
   createMorpheme = (morpheme: Morpheme): Promise<Morpheme> => {
-    return sendQuery('POST', `${this.baseUrl}/morphemes`, morpheme,
-      this.log, FETCH_TIMEOUT_MILLIS)
+    return sendQuery('POST', `${this.baseUrl}/morphemes`, morpheme)
   }
 
   updateMorpheme = (morpheme: Morpheme): Promise<Morpheme> => {
     const promise = sendQuery('PUT',
-      `${this.baseUrl}/morphemes/${morpheme.id}`, morpheme,
-      this.log, FETCH_TIMEOUT_MILLIS)
+      `${this.baseUrl}/morphemes/${morpheme.id}`, morpheme)
 
     this.listCardsCache = {}
     this.listMorphemesCache = {}
@@ -186,6 +169,6 @@ export default class Backend {
   guessMorphemes = (l2: string): Promise<MorphemeList> => {
     return sendQuery('GET',
       `${this.baseUrl}/morphemes?prefix=${encodeURIComponent(l2)}`,
-      null, this.log, FETCH_TIMEOUT_MILLIS)
+      null)
   }
 }

@@ -1,4 +1,4 @@
-import {Morpheme} from '../storage/MorphemesStorage'
+import {Morpheme} from '../backend/Backend'
 import * as React from 'react'
 
 interface Props {

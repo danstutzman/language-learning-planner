@@ -1,53 +1,25 @@
-import Backend, {BackendProps} from '../backend/Backend'
-import {Card} from '../storage/CardsStorage'
+import Backend from '../backend/Backend'
+import {BackendProps} from '../backend/Backend'
+import {Card} from '../backend/Backend'
 import {CardList} from '../backend/Backend'
-import {CardsProps} from '../storage/CardsStorage'
 import CardView from './CardView'
 import CardsView from './CardsView'
-import {DictionaryProps} from '../storage/DictionaryStorage'
-import DictionaryScreen from './DictionaryScreen'
-import {EMPTY_MORPHEME} from '../storage/MorphemesStorage'
-import { HashRouter } from 'react-router-dom'
-import { Link } from 'react-router-dom'
-import {Morpheme} from '../storage/MorphemesStorage'
+import {EMPTY_MORPHEME} from '../backend/Backend'
+import {HashRouter} from 'react-router-dom'
+import {Link} from 'react-router-dom'
+import {Morpheme} from '../backend/Backend'
 import {MorphemeList} from '../backend/Backend'
-import {MorphemesProps} from '../storage/MorphemesStorage'
 import MorphemeView from './MorphemeView'
 import MorphemesView from './MorphemesView'
 import * as React from 'react'
-import { Route } from 'react-router-dom'
-import {UploadsProps} from '../storage/UploadsStorage'
+import {Route} from 'react-router-dom'
 import usePromise from 'react-promise'
 
 interface Props {
   backend: BackendProps,
-  cards: CardsProps
-  dictionary: DictionaryProps,
-  log: (event: string, details?: {}) => void,
-  morphemes: MorphemesProps
-  uploads: UploadsProps,
-  wipeDb: () => void
 }
 
 export default class App extends React.PureComponent<Props> {
-  onClickWipeDb = () => {
-    if (window.confirm('Are you sure you want to wipe the database?')) {
-      this.props.wipeDb()
-      window.alert('Database wiped.')
-      window.location.reload()
-    }
-  }
-
-  onClickDownloadDictionary = () =>
-    this.props.backend.downloadDictionary()
-      .then(wordPairs => this.props.dictionary.saveDictionary(wordPairs))
-      .catch(e => console.warn('Error downloading dictionary', e))
-
-  onClickSyncBackend = () =>
-    this.props.uploads.listUploads()
-      .then(uploads => this.props.backend.sync(uploads))
-      .catch(e => console.warn('Sync error', e))
-
   renderCardView = (args: any) => {
     const id: number = parseInt(args.match.params.id, 10)
     const promise = this.props.backend.showCard(id)
@@ -71,12 +43,6 @@ export default class App extends React.PureComponent<Props> {
         history={args.history} />
     })
   }
-
-  renderDictionary = () =>
-    <DictionaryScreen
-      backend={this.props.backend}
-      dictionary={this.props.dictionary}
-      log={this.props.log} />
 
   renderMorphemeView = (args: any) => {
     const { id } = args.match.params
@@ -115,25 +81,15 @@ export default class App extends React.PureComponent<Props> {
     })
   }
 
-
   render() {
     return <HashRouter>
       <div className="App">
         <Link to="/cards">Cards</Link>
-        <Link to="/dictionary">Dictionary</Link>
         <Link to="/morphemes">Morphemes</Link>
         <br/>
 
-        <button onClick={this.onClickWipeDb}>Wipe database</button>
-        <button onClick={this.onClickSyncBackend}>Sync backend</button>
-        <button onClick={this.onClickDownloadDictionary}>
-          Download Dictionary
-        </button>
-        <hr />
-
         <Route path="/cards" exact render={this.renderCardsView} />
         <Route path="/cards/:id" render={this.renderCardView} />
-        <Route path="/dictionary" render={this.renderDictionary} />
         <Route path="/morphemes" exact render={this.renderMorphemesView} />
         <Route path="/morphemes/:id" render={this.renderMorphemeView} />
       </div>

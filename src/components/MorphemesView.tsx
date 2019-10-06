@@ -1,6 +1,5 @@
-import {Morpheme} from '../storage/MorphemesStorage'
+import {Morpheme} from '../backend/Backend'
 import {MorphemeList} from '../backend/Backend'
-import {MorphemesProps} from '../storage/MorphemesStorage'
 import * as React from 'react'
 
 export interface Props {
