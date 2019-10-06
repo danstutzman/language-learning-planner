@@ -1,4 +1,3 @@
-import {NetworkState} from './Backend'
 import {WordPair} from '../storage/DictionaryStorage'
 
 export default function downloadDictionary(
@@ -6,18 +5,15 @@ export default function downloadDictionary(
   clientVersion: string,
   log: (event: string, details?: {}) => void,
   timeoutMillis: number,
-  updateNetworkState: (networkState: NetworkState) => void,
 ): Promise<Array<WordPair>> {
   return new Promise((resolve, reject) => {
     log('DownloadDictionaryStart')
-    updateNetworkState(NetworkState.WAITING)
 
     let timedOut = false
     const timeout = setTimeout(
       () => {
         timedOut = true
         log('DownloadDictionaryTimeout', { timeout: timeoutMillis })
-        updateNetworkState(NetworkState.TIMEOUT)
         reject(new Error('TIMEOUT'))
       },
       timeoutMillis)
@@ -27,14 +23,13 @@ export default function downloadDictionary(
     }).then(response => {
       if (!timedOut) {
         clearTimeout(timeout)
-        const successPromise = handleResponse(response, log, updateNetworkState)
+        const successPromise = handleResponse(response, log)
         resolve(successPromise)
       }
     }).catch(e => {
       clearTimeout(timeout)
       if (e.message === 'Failed to fetch') {
         log('DownloadDictionaryFailure', e)
-        updateNetworkState(NetworkState.BAD_RESPONSE)
         reject(new Error('BAD_RESPONSE'))
       } else {
         reject(e)
@@ -46,7 +41,6 @@ export default function downloadDictionary(
 function handleResponse(
   response: Response,
   log: (event: string, details?: {}) => void,
-  updateNetworkState: (networkState: NetworkState) => void,
 ): Promise<Array<WordPair>> {
   return response.text().then(text => {
     if (!response.ok) {
@@ -54,12 +48,10 @@ function handleResponse(
         status: response.status,
         text: response.text,
       })
-      updateNetworkState(NetworkState.BAD_RESPONSE)
       throw new Error('BAD_RESPONSE')
     }
 
     log('DownloadDictionarySuccess')
-    updateNetworkState(NetworkState.ASSUMED_OK)
 
     const wordPairs = []
     const lines = text.split('\n')

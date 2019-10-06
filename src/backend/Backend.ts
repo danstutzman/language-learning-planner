@@ -9,22 +9,14 @@ import {WordPair} from '../storage/DictionaryStorage'
 
 const FETCH_TIMEOUT_MILLIS = 5000
 
-export enum NetworkState {
-  ASSUMED_OK = 'ASSUMED_OK',
-  WAITING = 'WAITING',
-  TIMEOUT = 'TIMEOUT',
-  BAD_RESPONSE = 'BAD_RESPONSE',
-  BAD_RESPONSE_JSON = 'BAD_RESPONSE_JSON',
-}
-
 export interface BackendProps {
   downloadDictionary: () => Promise<Array<WordPair>>
+  guessMorphemes: (l2: string) => Promise<MorphemeList>
   listCards: () => Promise<CardList>
   listMorphemes: () => Promise<MorphemeList>
   showCard: (id: number) => Promise<Card>
   showMorpheme: (id: number) => Promise<Morpheme>
   sync: (uploads: Array<Upload>) => Promise<void>
-  networkState: NetworkState
   updateCard: (card: Card) => Promise<Card>,
 }
 
@@ -59,9 +51,9 @@ export default class Backend {
     this.log = log
     this.props = {
       downloadDictionary: this.downloadDictionary,
+      guessMorphemes: this.guessMorphemes,
       listCards: this.listCards,
       listMorphemes: this.listMorphemes,
-      networkState: NetworkState.ASSUMED_OK,
       showCard: this.showCard,
       showMorpheme: this.showMorpheme,
       sync: this.sync,
@@ -73,14 +65,14 @@ export default class Backend {
 
   sync = (uploads: Array<Upload>): Promise<void> =>
     sync(uploads, `${this.baseUrl}/sync-cards`, '',
-      this.log, FETCH_TIMEOUT_MILLIS, this.updateNetworkState)
+      this.log, FETCH_TIMEOUT_MILLIS)
       .then(success => this.eventEmitter.emit('sync', success))
       .then(() => {})
 
   downloadDictionary = (): Promise<Array<WordPair>> =>
     downloadDictionary(
       `${this.baseUrl}/download-dictionary`, '',
-      this.log, FETCH_TIMEOUT_MILLIS, this.updateNetworkState)
+      this.log, FETCH_TIMEOUT_MILLIS)
 
   listCards = (): Promise<CardList> => {
     const query = '/cards'
@@ -91,7 +83,7 @@ export default class Backend {
 
     listPromise = Promise.resolve().then(() =>
       sendQuery('GET', `${this.baseUrl}/cards`, null,
-        this.log, FETCH_TIMEOUT_MILLIS, this.updateNetworkState))
+        this.log, FETCH_TIMEOUT_MILLIS))
     this.listCardsCache[query] = listPromise
 
     listPromise.then(list => {
@@ -112,7 +104,7 @@ export default class Backend {
 
     listPromise = Promise.resolve().then(() => 
       sendQuery('GET', `${this.baseUrl}/morphemes`, null,
-        this.log, FETCH_TIMEOUT_MILLIS, this.updateNetworkState))
+        this.log, FETCH_TIMEOUT_MILLIS))
     this.listMorphemesCache[query] = listPromise
 
     listPromise.then(list => {
@@ -132,7 +124,7 @@ export default class Backend {
 
     cardPromise = Promise.resolve().then(() => 
       sendQuery('GET', `${this.baseUrl}/cards/${id}`, null,
-        this.log, FETCH_TIMEOUT_MILLIS, this.updateNetworkState))
+        this.log, FETCH_TIMEOUT_MILLIS))
     this.showCardCache[id] = cardPromise
 
     return cardPromise
@@ -146,7 +138,7 @@ export default class Backend {
 
     morphemePromise = Promise.resolve().then(() => 
       sendQuery('GET', `${this.baseUrl}/morphemes/${id}`, null,
-        this.log, FETCH_TIMEOUT_MILLIS, this.updateNetworkState))
+        this.log, FETCH_TIMEOUT_MILLIS))
     this.showMorphemeCache[id] = morphemePromise
 
     return morphemePromise
@@ -155,7 +147,7 @@ export default class Backend {
   updateCard = async (card: Card): Promise<Card> => {
     const promise = Promise.resolve().then(() => sendQuery(
         'PUT', `${this.baseUrl}/cards/${card.id}`, card,
-        this.log, FETCH_TIMEOUT_MILLIS, this.updateNetworkState))
+        this.log, FETCH_TIMEOUT_MILLIS))
       .then(card => {
         this.eventEmitter.emit('cardsAndMorphemes')
         return card
@@ -170,8 +162,9 @@ export default class Backend {
     return promise
   }
 
-  updateNetworkState = (networkState: NetworkState) => {
-    this.props = { ...this.props, networkState }
-    this.eventEmitter.emit('networkState')
+  guessMorphemes = (l2: string): Promise<MorphemeList> => {
+    return Promise.resolve().then(() => sendQuery('GET',
+      `${this.baseUrl}/morphemes?prefix=${encodeURIComponent(l2)}`,
+        null, this.log, FETCH_TIMEOUT_MILLIS))
   }
 }

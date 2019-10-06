@@ -1,4 +1,3 @@
-import {NetworkState} from './Backend'
 
 export default function sendQuery(
   method: string,
@@ -6,18 +5,15 @@ export default function sendQuery(
   body: {} | null,
   log: (event: string, details?: {}) => void,
   timeoutMillis: number,
-  updateNetworkState: (networkState: NetworkState) => void,
 ): Promise<any> {
   return new Promise((resolve, reject) => {
     log('SyncStart')
-    updateNetworkState(NetworkState.WAITING)
 
     let timedOut = false
     const timeout = setTimeout(
       () => {
         timedOut = true
         log('SyncTimeout', { timeout: timeoutMillis })
-        updateNetworkState(NetworkState.TIMEOUT)
         reject(new Error('TIMEOUT'))
       },
       timeoutMillis)
@@ -28,14 +24,13 @@ export default function sendQuery(
     }).then(response => {
       if (!timedOut) {
         clearTimeout(timeout)
-        const successPromise = handleResponse(response, log, updateNetworkState)
+        const successPromise = handleResponse(response, log)
         resolve(successPromise)
       }
     }).catch(e => {
       clearTimeout(timeout)
       if (e.message === 'Failed to fetch') {
         log('SyncFailure', e)
-        updateNetworkState(NetworkState.BAD_RESPONSE)
         reject(new Error('BAD_RESPONSE'))
       } else {
         reject(e)
@@ -47,7 +42,6 @@ export default function sendQuery(
 function handleResponse(
   response: Response,
   log: (event: string, details?: {}) => void,
-  updateNetworkState: (networkState: NetworkState) => void,
 ): Promise<any> {
   return response.text().then(text => {
     if (!response.ok) {
@@ -55,7 +49,6 @@ function handleResponse(
         status: response.status,
         text: response.text,
       })
-      updateNetworkState(NetworkState.BAD_RESPONSE)
       throw new Error('BAD_RESPONSE')
     }
 
@@ -64,12 +57,10 @@ function handleResponse(
       parsed = JSON.parse(text)
     } catch (e) {
       log('SyncFailure', { error: e })
-      updateNetworkState(NetworkState.BAD_RESPONSE_JSON)
       throw new Error('BAD_RESPONSE_JSON')
     }
 
     log('SyncSuccess')
-    updateNetworkState(NetworkState.ASSUMED_OK)
 
     return parsed
   })

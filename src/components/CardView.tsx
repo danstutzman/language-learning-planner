@@ -2,20 +2,26 @@ import * as React from 'react'
 import {Card} from '../storage/CardsStorage'
 import './CardView.css'
 import {Morpheme} from '../storage/MorphemesStorage'
+import {MorphemeList} from '../backend/Backend'
 import {MorphemesProps} from '../storage/MorphemesStorage'
 
 interface Props {
   close: () => void
   card: Card
   save: (card: Card) => Promise<Card>
-  guessMorphemes: (l2: string) => Promise<Array<Morpheme>>
+  guessMorphemes: (l2: string) => Promise<MorphemeList>
 }
 
 interface State {
   l1: string
   l2: string
-  guessedMorphemes: Array<Morpheme>
+  guessedMorphemes: MorphemeList
   morphemes: Array<Morpheme>
+}
+
+const NO_GUESSED_MORPHEMES: MorphemeList = {
+  morphemes: [],
+  countWithoutLimit: 0,
 }
 
 export default class CardView extends React.PureComponent<Props, State> {
@@ -26,7 +32,7 @@ export default class CardView extends React.PureComponent<Props, State> {
     this.state = {
       l1,
       l2,
-      guessedMorphemes: [],
+      guessedMorphemes: NO_GUESSED_MORPHEMES,
       morphemes: props.card.morphemes.concat([{ l2: '', gloss: '' }]),
     }
   }
@@ -55,7 +61,6 @@ export default class CardView extends React.PureComponent<Props, State> {
           .concat(prev.morphemes.slice(index + 1)),
       }
     })
-    
   }
 
   onChangeMorphemeGloss = (e: any) => {
@@ -76,13 +81,13 @@ export default class CardView extends React.PureComponent<Props, State> {
       morphemes: prev.morphemes
         .slice(0, prev.morphemes.length - 1) // overwrite the last
         .concat([{
-          l2: prev.guessedMorphemes[index].l2,
-          gloss: prev.guessedMorphemes[index].gloss,
+          l2: prev.guessedMorphemes.morphemes[index].l2,
+          gloss: prev.guessedMorphemes.morphemes[index].gloss,
         }, {
           l2: '',
           gloss: '',
         }]),
-      guessedMorphemes: [],
+      guessedMorphemes: NO_GUESSED_MORPHEMES,
     }))
   }
 
@@ -92,7 +97,7 @@ export default class CardView extends React.PureComponent<Props, State> {
       morphemes: prev.morphemes
         .slice(0, index)
         .concat(prev.morphemes.slice(index + 1)),
-      guessedMorphemes: [],
+      guessedMorphemes: NO_GUESSED_MORPHEMES,
     }))
   }
 
@@ -103,7 +108,7 @@ export default class CardView extends React.PureComponent<Props, State> {
         .slice(0, index + 1)
         .concat([{ l2: '', gloss: '' }])
         .concat(prev.morphemes.slice(index + 1)),
-      guessedMorphemes: [],
+      guessedMorphemes: NO_GUESSED_MORPHEMES,
     }))
   }
 
@@ -182,7 +187,7 @@ export default class CardView extends React.PureComponent<Props, State> {
 
       <table style={{border: '1px black solid'}}>
         <tbody>
-          {guessedMorphemes.map((m: Morpheme, i: number) =>
+          {guessedMorphemes.morphemes.map((m: Morpheme, i: number) =>
             <tr key={i} className='darken-on-hover'>
               <td onClick={this.onClickGuessedMorpheme} data-index={i}>
                 {m.l2}

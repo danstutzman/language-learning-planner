@@ -56,7 +56,7 @@ export default class App extends React.PureComponent<Props> {
       return <CardView
         close={args.history.goBack}
         card={card}
-        guessMorphemes={() => Promise.resolve([])}
+        guessMorphemes={this.props.backend.guessMorphemes}
         save={this.props.backend.updateCard} />
     })
   }
@@ -115,7 +115,6 @@ export default class App extends React.PureComponent<Props> {
         <button onClick={this.onClickDownloadDictionary}>
           Download Dictionary
         </button>
-        <span>networkState={this.props.backend.networkState}</span>
         <hr />
 
         <Route path="/cards" exact render={this.renderCardsView} />

@@ -33,7 +33,6 @@ async function main() {
   const apiUrl = (host === 'localhost:3000') ?
     'http://localhost:8080/api' : `${protocol}//${host}/api`
   const backend = new Backend(apiUrl, uploadsStorage.log)
-  backend.eventEmitter.on('networkState', render)
   backend.eventEmitter.on('sync', success => {
     uploadsStorage.deleteUploads(success.uploadIdsToDelete)
     cardsStorage.updateCards(success.cards)

@@ -1,5 +1,4 @@
 import {Card} from '../storage/CardsStorage'
-import {NetworkState} from './Backend'
 import {Upload} from '../storage/UploadsStorage'
 import {Morpheme} from '../storage/MorphemesStorage'
 
@@ -69,18 +68,15 @@ export default function sync(
   clientVersion: string,
   log: (event: string, details?: {}) => void,
   timeoutMillis: number,
-  updateNetworkState: (networkState: NetworkState) => void,
 ): Promise<SyncSuccess> {
   return new Promise((resolve, reject) => {
     log('SyncStart')
-    updateNetworkState(NetworkState.WAITING)
 
     let timedOut = false
     const timeout = setTimeout(
       () => {
         timedOut = true
         log('SyncTimeout', { timeout: timeoutMillis })
-        updateNetworkState(NetworkState.TIMEOUT)
         reject(new Error('TIMEOUT'))
       },
       timeoutMillis)
@@ -97,14 +93,13 @@ export default function sync(
         const uploadIdsToDelete: Array<number> =
           uploads.map(upload => upload.id)
         const successPromise = handleResponse(
-          response, uploadIdsToDelete, log, updateNetworkState)
+          response, uploadIdsToDelete, log)
         resolve(successPromise)
       }
     }).catch(e => {
       clearTimeout(timeout)
       if (e.message === 'Failed to fetch') {
         log('SyncFailure', e)
-        updateNetworkState(NetworkState.BAD_RESPONSE)
         reject(new Error('BAD_RESPONSE'))
       } else {
         reject(e)
@@ -117,7 +112,6 @@ function handleResponse(
   response: Response,
   uploadIdsToDelete: Array<number>,
   log: (event: string, details?: {}) => void,
-  updateNetworkState: (networkState: NetworkState) => void,
 ): Promise<SyncSuccess> {
   return response.text().then(text => {
     if (!response.ok) {
@@ -125,7 +119,6 @@ function handleResponse(
         status: response.status,
         text: response.text,
       })
-      updateNetworkState(NetworkState.BAD_RESPONSE)
       throw new Error('BAD_RESPONSE')
     }
 
@@ -134,7 +127,6 @@ function handleResponse(
       parsed = JSON.parse(text)
     } catch (e) {
       log('SyncFailure', { error: e })
-      updateNetworkState(NetworkState.BAD_RESPONSE_JSON)
       throw new Error('BAD_RESPONSE_JSON')
     }
 
@@ -149,7 +141,6 @@ function handleResponse(
     const morphemes = parsed.morphemes.map(backendMorphemeToMorpheme)
 
     log('SyncSuccess')
-    updateNetworkState(NetworkState.ASSUMED_OK)
 
     return { cards, morphemes, uploadIdsToDelete }
   })
