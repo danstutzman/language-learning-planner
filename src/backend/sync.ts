@@ -1,6 +1,7 @@
 import {Card} from '../storage/CardsStorage'
 import {NetworkState} from './Backend'
 import {Upload} from '../storage/UploadsStorage'
+import {Morpheme} from '../storage/MorphemesStorage'
 
 interface BackendCard {
   id: number
@@ -18,16 +19,46 @@ export interface SyncSuccess {
 
 function backendCardToCard(backendCard: BackendCard): Card {
   try {
+    const { id, l1, l2, morpheme_ids_json, created_at_millis,
+      updated_at_millis } = backendCard
+    if (!id || !l1 || !l2 || !morpheme_ids_json || !created_at_millis ||
+        !updated_at_millis) {
+      throw Error('Missing a field in backendCard')
+    }
     return {
-      id: backendCard.id,
-      l1: backendCard.l1,
-      l2: backendCard.l2,
-      morphemeIds: JSON.parse(backendCard.morpheme_ids_json),
-      createdAtMillis: backendCard.created_at_millis,
-      updatedAtMillis: backendCard.updated_at_millis,
+      id, l1, l2,
+      morphemeIds: JSON.parse(morpheme_ids_json),
+      createdAtMillis: created_at_millis,
+      updatedAtMillis: updated_at_millis,
     }
   } catch (e) {
     console.error('backendCard', backendCard)
+    throw e
+  }
+}
+
+interface BackendMorpheme {
+  id: number
+  l2: string
+  lemma: string
+  gloss: string
+  created_at_millis: number
+  updated_at_millis: number
+}
+
+function backendMorphemeToMorpheme(backendMorpheme: BackendMorpheme): Morpheme {
+  try {
+    const { id, l2, gloss, created_at_millis, updated_at_millis } =
+      backendMorpheme
+    if (!id || !l2 || !gloss || !created_at_millis || !updated_at_millis) {
+      throw Error('Missing a field in backendMorpheme')
+    }
+    return { id, l2, gloss,
+      createdAtMillis: created_at_millis,
+      updatedAtMillis: updated_at_millis,
+    }
+  } catch (e) {
+    console.error('backendMorpheme', backendMorpheme)
     throw e
   }
 }
@@ -107,10 +138,19 @@ function handleResponse(
       throw new Error('BAD_RESPONSE_JSON')
     }
 
+    if (!parsed.cards) {
+      throw new Error('Missing cards in response')
+    }
+    const cards = parsed.cards.map(backendCardToCard)
+
+    if (!parsed.morphemes) {
+      throw new Error('Missing morphemes in response')
+    }
+    const morphemes = parsed.morphemes.map(backendMorphemeToMorpheme)
+
     log('SyncSuccess')
-    const backendCards: Array<BackendCard> = parsed.cards
-    const cards = backendCards.map(backendCardToCard)
     updateNetworkState(NetworkState.ASSUMED_OK)
-    return { cards, uploadIdsToDelete }
+
+    return { cards, morphemes, uploadIdsToDelete }
   })
 }

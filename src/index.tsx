@@ -40,6 +40,7 @@ async function main() {
   backend.eventEmitter.on('sync', success => {
     uploadsStorage.deleteUploads(success.uploadIdsToDelete)
     cardsStorage.updateCards(success.cards)
+    morphemesStorage.updateMorphemes(success.morphemes)
   })
 
   function render() {

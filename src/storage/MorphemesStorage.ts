@@ -155,6 +155,19 @@ export default class MorphemesStorage {
     })
   }
 
+  updateMorphemes = async (morphemes: Array<Morpheme>): Promise<void> => {
+    await this.db.morphemes.bulkPut(morphemes)
+
+    this.guessedMorphemesByL2 = {} // clear cache
+    const morphemeById: {[id: number]: Morpheme} = {}
+    this.db.morphemes
+      .each((morpheme: Morpheme) => morphemeById[morpheme.id] = morpheme)
+      .then(() => {
+        this.props = { ...this.props, morphemeById, hasLoaded: true }
+        this.eventEmitter.emit('morphemes')
+      })
+  }
+
   deleteMorpheme = (id: number): Promise<void> =>
     this.db.morphemes.delete(id).then(() => {
       var morphemeById = { ...this.props.morphemeById }
