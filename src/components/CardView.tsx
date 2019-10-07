@@ -10,6 +10,7 @@ interface Props {
   close: () => void
   card: Card
   guessMorphemes: (l2Prefix: string) => Promise<MorphemeList>
+  parseL2Phrase: (l2: string) => Promise<MorphemeList>
   save: (card: Card) => Promise<Card>
 }
 
@@ -42,6 +43,15 @@ export default class CardView extends React.PureComponent<Props, State> {
   onChangeL1 = (e: any) => {
     const l1 = e.target.value
     this.setState({ l1 })
+  }
+
+  onBlurL2 = () => {
+    const { morphemes } = this.state
+    if (morphemes.length === 0 ||
+      morphemes.length === 1 && !morphemes[0].l2 && !morphemes[0].gloss) {
+      this.props.parseL2Phrase(this.state.l2).then(morphemeList =>
+        this.setState({ morphemes: morphemeList.morphemes }))
+    }
   }
 
   onChangeL2 = (e: any) => {
@@ -97,6 +107,7 @@ export default class CardView extends React.PureComponent<Props, State> {
       <input
         type='text'
         value={l2}
+        onBlur={this.onBlurL2}
         onChange={this.onChangeL2} />
       <br/>
 

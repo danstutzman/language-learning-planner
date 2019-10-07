@@ -30,6 +30,7 @@ export default class App extends React.PureComponent<Props> {
         close={args.history.goBack}
         card={card}
         guessMorphemes={this.props.backend.guessMorphemes}
+        parseL2Phrase={this.props.backend.parseL2Phrase}
         save={this.props.backend.updateCard} />
     })
   }

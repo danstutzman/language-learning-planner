@@ -31,6 +31,7 @@ export interface BackendProps {
   guessMorphemes: (l2Prefix: string) => Promise<MorphemeList>
   listCards: () => Promise<CardList>
   listMorphemes: () => Promise<MorphemeList>
+  parseL2Phrase: (l2Phrase: string) => Promise<MorphemeList>
   showCard: (id: number) => Promise<Card>
   showMorpheme: (id: number) => Promise<Morpheme>
   updateCard: (card: Card) => Promise<Card>,
@@ -67,6 +68,7 @@ export default class Backend {
       guessMorphemes: this.guessMorphemes,
       listCards: this.listCards,
       listMorphemes: this.listMorphemes,
+      parseL2Phrase: this.parseL2Phrase,
       showCard: this.showCard,
       showMorpheme: this.showMorpheme,
       updateCard: this.updateCard,
@@ -188,4 +190,8 @@ export default class Backend {
   guessMorphemes = (l2Prefix: string): Promise<MorphemeList> =>
     sendQuery('GET', `${this.baseUrl}/morphemes` +
       `?l2_prefix=${encodeURIComponent(l2Prefix)}`, null)
+
+  parseL2Phrase = (l2Phrase: string) : Promise<MorphemeList> =>
+    sendQuery('GET', `${this.baseUrl}/morphemes` +
+      `?l2_phrase=${encodeURIComponent(l2Phrase)}`, null)
 }
