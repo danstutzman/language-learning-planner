@@ -57,11 +57,13 @@ export default class MorphemeRow extends React.PureComponent<Props, State> {
 
   onChangeL2 = (e: any) => {
     const l2 = e.target.value
-    this.props.guessMorphemes(l2)
-      .then(guessedMorphemes => this.setState({
-        guessedMorphemes,
-        highlightedGuessNum: -1,
-      }))
+    if (l2 !== '') {
+      this.props.guessMorphemes(l2)
+        .then(guessedMorphemes => this.setState({
+          guessedMorphemes,
+          highlightedGuessNum: -1,
+        }))
+    }
     this.props.updateMorpheme(
       { ...this.props.morpheme, l2 }, this.props.numMorpheme)
   }
@@ -88,12 +90,15 @@ export default class MorphemeRow extends React.PureComponent<Props, State> {
     this.props.insertRowAfter(this.props.numMorpheme)
   }
 
-  onFocusL2 = () =>
-    this.props.guessMorphemes(this.props.morpheme.l2)
-      .then(guessedMorphemes => this.setState({
-        guessedMorphemes,
-        highlightedGuessNum: -1,
-      }))
+  onFocusL2 = () => {
+    if (this.props.morpheme.l2 !== '') {
+      this.props.guessMorphemes(this.props.morpheme.l2)
+        .then(guessedMorphemes => this.setState({
+          guessedMorphemes,
+          highlightedGuessNum: -1,
+        }))
+    }
+  }
 
   onKeyDown = (e: any) => {
     if (e.keyCode === 27) { // escape key
