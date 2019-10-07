@@ -33,6 +33,8 @@ export default class CardView extends React.PureComponent<Props, State> {
     }
   }
 
+  doneSettingFocus = () =>
+    this.setState({ focusedNumMorpheme: -1 })
 
   guessMorphemes = (l2Prefix: string) =>
     this.props.guessMorphemes(l2Prefix, this.state.l2)
@@ -115,6 +117,7 @@ export default class CardView extends React.PureComponent<Props, State> {
           {morphemes.map((m: Morpheme, i: number) =>
             <MorphemeRow
               deleteRow={this.onClickDeleteMorpheme}
+              doneSettingFocus={this.doneSettingFocus}
               guessMorphemes={this.guessMorphemes}
               morpheme={m}
               insertRowAfter={this.onClickInsertMorpheme}

@@ -5,6 +5,7 @@ import * as React from 'react'
 
 interface Props {
   deleteRow: (numMorpheme: number) => void
+  doneSettingFocus: () => void,
   guessMorphemes: (l2: string) => Promise<MorphemeList>
   insertRowAfter: (numMorpheme: number) => void
   isFocused: boolean,
@@ -34,6 +35,7 @@ export default class MorphemeRow extends React.PureComponent<Props, State> {
   componentDidUpdate (prevProps: Props) {
     if (this.props.isFocused && !prevProps.isFocused) {
       this.l2Element.focus()
+      this.props.doneSettingFocus()
     }
   }
 
