@@ -4,8 +4,9 @@ import './CardsView.css'
 import * as React from 'react'
 
 export interface Props {
-  history: any,
   cardList: CardList | void
+  deleteCard: (id: number) => Promise<void>,
+  history: any,
 }
 
 export default class CardsView extends React.PureComponent<Props> {
@@ -21,9 +22,9 @@ export default class CardsView extends React.PureComponent<Props> {
   }
 
   onClickDelete = (e: any) => {
-    // e.stopPropagation()
-    // const id: number = parseInt(e.target.getAttribute('data-id'), 10)
-    // this.props.cards.deleteCard(id)
+    e.stopPropagation()
+    const id: number = parseInt(e.target.getAttribute('data-id'), 10)
+    this.props.deleteCard(id)
   }
 
   render() {

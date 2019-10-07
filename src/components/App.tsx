@@ -41,6 +41,7 @@ export default class App extends React.PureComponent<Props> {
       const cardList = usePromise<CardList>(promise).value
       return <CardsView
         cardList={cardList}
+        deleteCard={this.props.backend.deleteCard}
         history={args.history} />
     })
   }

@@ -27,6 +27,7 @@ export const EMPTY_MORPHEME_LIST: MorphemeList = {
 
 export interface BackendProps {
   createMorpheme: (morpheme: Morpheme) => Promise<Morpheme>,
+  deleteCard: (id: number) => Promise<void>,
   deleteMorpheme: (id: number) => Promise<void>,
   guessMorphemes: (l2Prefix: string) => Promise<MorphemeList>
   listCards: () => Promise<CardList>
@@ -64,6 +65,7 @@ export default class Backend {
     this.listMorphemesCache = {}
     this.props = {
       createMorpheme: this.createMorpheme,
+      deleteCard: this.deleteCard,
       deleteMorpheme: this.deleteMorpheme,
       guessMorphemes: this.guessMorphemes,
       listCards: this.listCards,
@@ -173,6 +175,17 @@ export default class Backend {
     this.listMorphemesCache = {}
     this.showCardCache = {}
     this.showMorphemeCache = { [morpheme.id]: promise }
+    return promise.then(this.refresh)
+  }
+
+  deleteCard = (id: number): Promise<void> => {
+    this.listCardsCache = {}
+    this.listMorphemesCache = {}
+    this.showCardCache = {}
+    this.showMorphemeCache = {}
+
+    const promise = sendQuery(
+      'DELETE', `${this.baseUrl}/cards/${id}`, null)
     return promise.then(this.refresh)
   }
 
