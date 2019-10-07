@@ -32,7 +32,14 @@ export default class MorphemeRow extends React.PureComponent<Props, State> {
     }
   }
 
-  componentDidUpdate (prevProps: Props) {
+  componentDidMount() {
+    if (this.props.isFocused) {
+      this.l2Element.focus()
+      this.props.doneSettingFocus()
+    }
+  }
+
+  componentDidUpdate(prevProps: Props) {
     if (this.props.isFocused && !prevProps.isFocused) {
       this.l2Element.focus()
       this.props.doneSettingFocus()
@@ -45,14 +52,17 @@ export default class MorphemeRow extends React.PureComponent<Props, State> {
       highlightedGuessNum: -1,
     })
 
+  // Needs setTimeout so 'click' fires before 'blur'
   onBlurL2 = () =>
-    this.hideGuesses()
+    setTimeout(this.hideGuesses, 100)
 
   onChangeL2 = (e: any) => {
     const l2 = e.target.value
     this.props.guessMorphemes(l2)
       .then(guessedMorphemes => this.setState({
-        guessedMorphemes, highlightedGuessNum: -1 }))
+        guessedMorphemes,
+        highlightedGuessNum: -1,
+      }))
     this.props.updateMorpheme(
       { ...this.props.morpheme, l2 }, this.props.numMorpheme)
   }
@@ -66,6 +76,7 @@ export default class MorphemeRow extends React.PureComponent<Props, State> {
     const morpheme = this.state.guessedMorphemes.morphemes[index]
     this.props.updateMorpheme(morpheme, this.props.numMorpheme)
     this.hideGuesses()
+    this.props.moveFocus(this.props.numMorpheme)
   }
 
   onClickDelete = (e: any) => {
@@ -80,7 +91,10 @@ export default class MorphemeRow extends React.PureComponent<Props, State> {
 
   onFocusL2 = () =>
     this.props.guessMorphemes(this.props.morpheme.l2)
-      .then(guessedMorphemes => this.setState({ guessedMorphemes }))
+      .then(guessedMorphemes => this.setState({
+        guessedMorphemes,
+        highlightedGuessNum: -1,
+      }))
 
   onKeyDown = (e: any) => {
     if (e.keyCode === 27) { // escape key
@@ -133,19 +147,16 @@ export default class MorphemeRow extends React.PureComponent<Props, State> {
         </td>
       </tr>
 
-      {this.state.guessedMorphemes.morphemes.map(
-        (m: Morpheme, i: number) =>
-          <tr
-            key={i}
-            className={'darken-on-hover ' +
-              (i === this.state.highlightedGuessNum ? 'highlighted' : '')}>
-            <td onClick={this.onClickGuessed} data-index={i}>
-              {m.l2}
-            </td>
-            <td onClick={this.onClickGuessed} data-index={i}>
-              {m.gloss}
-            </td>
-          </tr>)}
+      {this.state.guessedMorphemes.morphemes.map((m: Morpheme, i: number) =>
+        <tr key={i} className={'darken-on-hover ' +
+            (i === this.state.highlightedGuessNum ? 'highlighted' : '')}>
+          <td onClick={this.onClickGuessed} data-index={i}>
+            {m.l2}
+          </td>
+          <td onClick={this.onClickGuessed} data-index={i}>
+            {m.gloss}
+          </td>
+        </tr>)}
     </React.Fragment>
   }
 }
