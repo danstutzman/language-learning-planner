@@ -171,8 +171,14 @@ export default class Backend {
   }
 
   createCard = (card: Card): Promise<Card> => {
-    return sendQuery('POST', `${this.baseUrl}/cards`, card)
+    const promise = sendQuery('POST', `${this.baseUrl}/cards`, card)
       .then(this.refresh)
+
+    this.listCardsCache = {}
+    this.listMorphemesCache = {}
+    this.showMorphemeCache = {}
+    this.showCardCache = { [card.id]: promise }
+    return promise.then(this.refresh)
   }
 
   createMorpheme = (morpheme: Morpheme): Promise<Morpheme> => {
