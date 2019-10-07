@@ -4,6 +4,7 @@ import {Card} from '../backend/Backend'
 import {CardList} from '../backend/Backend'
 import CardView from './CardView'
 import CardsView from './CardsView'
+import {EMPTY_CARD} from '../backend/Backend'
 import {EMPTY_MORPHEME} from '../backend/Backend'
 import {HashRouter} from 'react-router-dom'
 import {Link} from 'react-router-dom'
@@ -21,18 +22,33 @@ interface Props {
 
 export default class App extends React.PureComponent<Props> {
   renderCardView = (args: any) => {
-    const id: number = parseInt(args.match.params.id, 10)
-    const promise = this.props.backend.showCard(id)
-    return React.createElement(() => {
-      const card = usePromise<Card>(promise).value
-      if (!card) { return <div>Loading...</div> }
+    const { id } = args.match.params
+    const { backend } = this.props
+    if (id === 'new') {
+      const save = (card: Card) =>
+        backend.createCard(card).then(card => {
+          args.history.push(`/cards/${card.id}`)
+          return card
+        })
       return <CardView
         close={args.history.goBack}
-        card={card}
-        guessMorphemes={this.props.backend.guessMorphemes}
-        parseL2Phrase={this.props.backend.parseL2Phrase}
-        save={this.props.backend.updateCard} />
-    })
+        card={EMPTY_CARD}
+        guessMorphemes={backend.guessMorphemes}
+        parseL2Phrase={backend.parseL2Phrase}
+        save={save} />
+    } else {
+      const promise = backend.showCard(parseInt(id, 10))
+      return React.createElement(() => {
+        const card = usePromise<Card>(promise).value
+        if (!card) { return <div>Loading...</div> }
+        return <CardView
+          close={args.history.goBack}
+          card={card}
+          guessMorphemes={backend.guessMorphemes}
+          parseL2Phrase={backend.parseL2Phrase}
+          save={backend.updateCard} />
+      })
+    }
   }
 
   renderCardsView = (args: any) => {

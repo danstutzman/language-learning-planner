@@ -16,9 +16,7 @@ export default class CardsView extends React.PureComponent<Props> {
   }
 
   onClickNewCard = () => {
-    // this.props.cards.createCard().then(card =>
-    //   this.props.history.push(`/cards/${card.id}`)
-    // )
+    this.props.history.push('/cards/new')
   }
 
   onClickDelete = (e: any) => {
