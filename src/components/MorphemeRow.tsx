@@ -107,7 +107,9 @@ export default class MorphemeRow extends React.PureComponent<Props, State> {
       this.setState(prev => ({
         highlightedGuessNum: prev.highlightedGuessNum + 1,
       }))
-    } else if (e.key === 'Enter' && this.state.highlightedGuessNum !== -1) {
+    } else if (e.key === 'Tab' && !e.shiftKey &&
+        this.state.highlightedGuessNum !== -1) {
+      e.preventDefault()
       const morpheme = this.state.guessedMorphemes.morphemes[
         this.state.highlightedGuessNum]
       this.props.updateMorpheme(morpheme, this.props.numMorpheme)
