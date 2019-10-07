@@ -25,13 +25,8 @@ export default class CardView extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props)
 
-    const { l1, l2 } = props.card
-    this.state = {
-      focusedNumMorpheme: -1,
-      l1,
-      l2,
-      morphemes: props.card.morphemes.concat([{ l2: '', gloss: '' }]),
-    }
+    const { l1, l2, morphemes } = props.card
+    this.state = { l1, l2, morphemes, focusedNumMorpheme: -1 }
   }
 
   doneSettingFocus = () =>
@@ -90,8 +85,13 @@ export default class CardView extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { l1, l2, morphemes } = this.state
+    const { l1, l2 } = this.state
     const { card, close } = this.props
+
+    // You need at least one morpheme to get started; otherwise there's
+    // no Insert button to make your first morpheme.
+    let morphemes = this.state.morphemes.length ?
+      this.state.morphemes : [EMPTY_MORPHEME]
 
     return <div>
       <h2>
@@ -130,7 +130,6 @@ export default class CardView extends React.PureComponent<Props, State> {
               morpheme={m}
               insertRowAfter={this.onClickInsertMorpheme}
               isFocused={i == this.state.focusedNumMorpheme}
-              isLast={i == morphemes.length - 1}
               key={i}
               moveFocus={this.moveFocus}
               numMorpheme={i}

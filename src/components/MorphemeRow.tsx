@@ -9,7 +9,6 @@ interface Props {
   guessMorphemes: (l2: string) => Promise<MorphemeList>
   insertRowAfter: (numMorpheme: number) => void
   isFocused: boolean,
-  isLast: boolean
   morpheme: Morpheme
   moveFocus: (numMorpheme: number) => void,
   numMorpheme: number
@@ -119,6 +118,11 @@ export default class MorphemeRow extends React.PureComponent<Props, State> {
   }
 
   render() {
+    const morphemes = this.state.guessedMorphemes ?
+      this.state.guessedMorphemes.morphemes : []
+    const showGuessedMorphemes = !(morphemes.length === 1
+      && morphemes[0].id === this.props.morpheme.id)
+
     return <React.Fragment key={this.props.numMorpheme}>
       <tr key={this.props.numMorpheme}>
         <td>
@@ -138,18 +142,14 @@ export default class MorphemeRow extends React.PureComponent<Props, State> {
             onChange={this.onChangeGloss} />
         </td>
         <td>
-          <button
-            onClick={this.onClickDelete}
-            disabled={this.props.isLast}>Delete</button>
+          <button onClick={this.onClickDelete}>Delete</button>
         </td>
         <td>
-          <button
-            onClick={this.onClickInsert}
-            disabled={this.props.isLast}>Insert</button>
+          <button onClick={this.onClickInsert}>Insert</button>
         </td>
       </tr>
 
-      {this.state.guessedMorphemes.morphemes.map((m: Morpheme, i: number) =>
+      {showGuessedMorphemes && morphemes.map((m: Morpheme, i: number) =>
         <tr key={i} className={'darken-on-hover ' +
             (i === this.state.highlightedGuessNum ? 'highlighted' : '')}>
           <td onClick={this.onClickGuessed} data-index={i}>
