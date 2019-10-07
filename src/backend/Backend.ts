@@ -43,7 +43,7 @@ export interface BackendProps {
   showCard: (id: number) => Promise<Card>
   showMorpheme: (id: number) => Promise<Morpheme>
   updateCard: (card: Card) => Promise<Card>,
-  updateMorpheme: (morpheme: Morpheme) => Promise<Morpheme>,
+  updateMorpheme: (morpheme: Morpheme) => Promise<Morpheme>
 }
 
 export interface CardList {

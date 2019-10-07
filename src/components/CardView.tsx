@@ -35,9 +35,6 @@ export default class CardView extends React.PureComponent<Props, State> {
   moveFocus = (numMorpheme: number) =>
     this.setState({ focusedNumMorpheme: numMorpheme + 1 })
 
-  onChangeL1 = (e: any) => {
-    const l1 = e.target.value
-    this.setState({ l1 })
   }
 
   onBlurL2 = () => {
@@ -48,6 +45,11 @@ export default class CardView extends React.PureComponent<Props, State> {
       this.props.parseL2Phrase(l2).then(morphemeList =>
         this.setState({ morphemes: morphemeList.morphemes }))
     }
+  }
+
+  onChangeL1 = (e: any) => {
+    const l1 = e.target.value
+    this.setState({ l1 })
   }
 
   onChangeL2 = (e: any) => {
