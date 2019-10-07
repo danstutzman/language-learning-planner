@@ -41,10 +41,11 @@ export default class CardView extends React.PureComponent<Props, State> {
   }
 
   onBlurL2 = () => {
-    const { morphemes } = this.state
-    if (morphemes.length === 0 ||
-      morphemes.length === 1 && !morphemes[0].l2 && !morphemes[0].gloss) {
-      this.props.parseL2Phrase(this.state.l2).then(morphemeList =>
+    const { morphemes, l2 } = this.state
+    if (l2 !== '' &&
+      (morphemes.length === 0 ||
+       morphemes.length === 1 && !morphemes[0].l2 && !morphemes[0].gloss)) {
+      this.props.parseL2Phrase(l2).then(morphemeList =>
         this.setState({ morphemes: morphemeList.morphemes }))
     }
   }
