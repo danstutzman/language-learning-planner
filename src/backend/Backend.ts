@@ -28,7 +28,7 @@ export const EMPTY_MORPHEME_LIST: MorphemeList = {
 export interface BackendProps {
   createMorpheme: (morpheme: Morpheme) => Promise<Morpheme>,
   deleteMorpheme: (id: number) => Promise<void>,
-  guessMorphemes: (l2: string) => Promise<MorphemeList>
+  guessMorphemes: (l2Prefix: string, allL2: string) => Promise<MorphemeList>
   listCards: () => Promise<CardList>
   listMorphemes: () => Promise<MorphemeList>
   showCard: (id: number) => Promise<Card>
@@ -185,8 +185,10 @@ export default class Backend {
     return promise.then(this.refresh)
   }
 
-  guessMorphemes = (l2: string): Promise<MorphemeList> =>
+  guessMorphemes = (l2Prefix: string, allL2: string): Promise<MorphemeList> =>
     sendQuery('GET',
-      `${this.baseUrl}/morphemes?prefix=${encodeURIComponent(l2)}`,
+      `${this.baseUrl}/morphemes` +
+      `?l2_prefix=${encodeURIComponent(l2Prefix)}` +
+      `&all_l2=${encodeURIComponent(allL2)}`,
       null)
 }
