@@ -86,7 +86,7 @@ export default class CardView extends React.PureComponent<Props, State> {
 
     return <div>
       <h2>
-        Card ID={card.id}
+        Card
         <button onClick={close}>X</button>
       </h2>
 
