@@ -27,7 +27,7 @@ export default class App extends React.PureComponent<Props> {
     if (id === 'new') {
       const save = (card: Card) =>
         backend.createCard(card).then(card => {
-          args.history.push(`/cards/${card.id}`)
+          args.history.replace(`/cards/${card.id}`)
           return card
         })
       return <CardView
@@ -69,7 +69,7 @@ export default class App extends React.PureComponent<Props> {
     if (id === 'new') {
       const save = (morpheme: Morpheme) =>
         backend.createMorpheme(morpheme).then(morpheme => {
-          args.history.push(`/morphemes/${morpheme.id}`)
+          args.history.replace(`/morphemes/${morpheme.id}`)
           return morpheme
         })
       return <MorphemeView
