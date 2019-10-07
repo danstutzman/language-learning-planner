@@ -9,7 +9,7 @@ import MorphemeRow from './MorphemeRow'
 interface Props {
   close: () => void
   card: Card
-  guessMorphemes: (l2Prefix: string, allL2: string) => Promise<MorphemeList>
+  guessMorphemes: (l2Prefix: string) => Promise<MorphemeList>
   save: (card: Card) => Promise<Card>
 }
 
@@ -35,9 +35,6 @@ export default class CardView extends React.PureComponent<Props, State> {
 
   doneSettingFocus = () =>
     this.setState({ focusedNumMorpheme: -1 })
-
-  guessMorphemes = (l2Prefix: string) =>
-    this.props.guessMorphemes(l2Prefix, this.state.l2)
 
   moveFocus = (numMorpheme: number) =>
     this.setState({ focusedNumMorpheme: numMorpheme + 1 })
@@ -118,7 +115,7 @@ export default class CardView extends React.PureComponent<Props, State> {
             <MorphemeRow
               deleteRow={this.onClickDeleteMorpheme}
               doneSettingFocus={this.doneSettingFocus}
-              guessMorphemes={this.guessMorphemes}
+              guessMorphemes={this.props.guessMorphemes}
               morpheme={m}
               insertRowAfter={this.onClickInsertMorpheme}
               isFocused={i == this.state.focusedNumMorpheme}
