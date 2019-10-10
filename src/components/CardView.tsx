@@ -16,7 +16,6 @@ interface Props {
 
 interface State {
   focusedNumMorpheme: number
-  l1: string
   l2: string
   morphemes: Array<Morpheme>
 }
@@ -25,8 +24,8 @@ export default class CardView extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props)
 
-    const { l1, l2, morphemes } = props.card
-    this.state = { l1, l2, morphemes, focusedNumMorpheme: -1 }
+    const { l2, morphemes } = props.card
+    this.state = { l2, morphemes, focusedNumMorpheme: -1 }
   }
 
   doneSettingFocus = () =>
@@ -35,21 +34,14 @@ export default class CardView extends React.PureComponent<Props, State> {
   moveFocus = (numMorpheme: number) =>
     this.setState({ focusedNumMorpheme: numMorpheme + 1 })
 
-  }
-
   onBlurL2 = () => {
     const { morphemes, l2 } = this.state
     if (l2 !== '' &&
       (morphemes.length === 0 ||
-       morphemes.length === 1 && !morphemes[0].l2 && !morphemes[0].gloss)) {
+       morphemes.length === 1 && !morphemes[0].l2 && !morphemes[0].type)) {
       this.props.parseL2Phrase(l2).then(morphemeList =>
         this.setState({ morphemes: morphemeList.morphemes }))
     }
-  }
-
-  onChangeL1 = (e: any) => {
-    const l1 = e.target.value
-    this.setState({ l1 })
   }
 
   onChangeL2 = (e: any) => {
@@ -83,12 +75,12 @@ export default class CardView extends React.PureComponent<Props, State> {
     }))
 
   onClickSave = () => {
-    const { l1, l2, morphemes } = this.state
-    this.props.save({ ...this.props.card, l1, l2, morphemes })
+    const { l2, morphemes } = this.state
+    this.props.save({ ...this.props.card, l2, morphemes })
   }
 
   render() {
-    const { l1, l2 } = this.state
+    const { l2 } = this.state
     const { card, close } = this.props
 
     // You need at least one morpheme to get started; otherwise there's
@@ -102,10 +94,6 @@ export default class CardView extends React.PureComponent<Props, State> {
         <button onClick={close}>X</button>
       </h2>
 
-      <b>L1</b>
-      <input type='text' value={l1} onChange={this.onChangeL1} autoFocus />
-      <br/>
-
       <b>L2</b>
       <input
         type='text'
@@ -118,8 +106,8 @@ export default class CardView extends React.PureComponent<Props, State> {
       <table>
         <thead>
           <tr>
+            <th>Type</th>
             <th>L2</th>
-            <th>Gloss</th>
             <th></th>
             <th></th>
           </tr>

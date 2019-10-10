@@ -68,9 +68,9 @@ export default class MorphemeRow extends React.PureComponent<Props, State> {
       { ...this.props.morpheme, l2 }, this.props.numMorpheme)
   }
 
-  onChangeGloss = (e: any) =>
+  onChangeType = (e: any) =>
     this.props.updateMorpheme(
-      { ...this.props.morpheme, gloss: e.target.value }, this.props.numMorpheme)
+      { ...this.props.morpheme, type: e.target.value }, this.props.numMorpheme)
 
   onClickGuessed = (e: any) => {
     const index = parseInt(e.target.getAttribute('data-index'), 10)
@@ -133,18 +133,18 @@ export default class MorphemeRow extends React.PureComponent<Props, State> {
         <td>
           <input
             type='text'
+            value={this.props.morpheme.type}
+            onChange={this.onChangeType} />
+        </td>
+        <td>
+          <input
+            type='text'
             ref={(l2Element) => { this.l2Element = l2Element }}
             value={this.props.morpheme.l2}
             onBlur={this.onBlurL2}
             onChange={this.onChangeL2}
             onFocus={this.onFocusL2}
             onKeyDown={this.onKeyDown} />
-        </td>
-        <td>
-          <input
-            type='text'
-            value={this.props.morpheme.gloss}
-            onChange={this.onChangeGloss} />
         </td>
         <td>
           <button onClick={this.onClickDelete}>Delete</button>
@@ -158,10 +158,10 @@ export default class MorphemeRow extends React.PureComponent<Props, State> {
         <tr key={i} className={'darken-on-hover ' +
             (i === this.state.highlightedGuessNum ? 'highlighted' : '')}>
           <td onClick={this.onClickGuessed} data-index={i}>
-            {m.l2}
+            {m.type}
           </td>
           <td onClick={this.onClickGuessed} data-index={i}>
-            {m.gloss}
+            {m.l2}
           </td>
         </tr>)}
     </React.Fragment>

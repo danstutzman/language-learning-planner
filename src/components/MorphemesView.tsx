@@ -35,8 +35,8 @@ export default class MorphemesView extends React.PureComponent<Props> {
         <thead>
           <tr>
             <th>ID</th>
+            <th>Type</th>
             <th>L2</th>
-            <th>Gloss</th>
             <th>Delete</th>
           </tr>
         </thead>
@@ -49,8 +49,8 @@ export default class MorphemesView extends React.PureComponent<Props> {
               onClick={this.onClickMorpheme}
               data-id={morpheme.id}>
               <td>{morpheme.id}</td>
+              <td>{morpheme.type}</td>
               <td>{morpheme.l2}</td>
-              <td>{morpheme.gloss}</td>
               <td>
                 <button onClick={this.onClickDelete} data-id={morpheme.id}>
                   Delete

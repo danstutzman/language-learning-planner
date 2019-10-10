@@ -36,7 +36,6 @@ export default class CardsView extends React.PureComponent<Props> {
         <thead>
           <tr>
             <th>ID</th>
-            <th>L1</th>
             <th>L2</th>
             <th>Delete</th>
           </tr>
@@ -50,7 +49,6 @@ export default class CardsView extends React.PureComponent<Props> {
               onClick={this.onClickCard}
               data-id={card.id}>
               <td>{card.id}</td>
-              <td>{card.l1}</td>
               <td>{card.l2}</td>
               <td>
                 <button onClick={this.onClickDelete} data-id={card.id}>

@@ -4,13 +4,13 @@ import sendQuery from './sendQuery'
 
 export interface Morpheme {
   id?: number
+  type: string
   l2: string
-  gloss: string
 }
 
 export const EMPTY_MORPHEME: Morpheme = {
+  type: '',
   l2: '',
-  gloss: '',
 }
 
 export interface Card {
@@ -223,7 +223,7 @@ export default class Backend {
     sendQuery('GET', `${this.baseUrl}/morphemes` +
       `?l2_prefix=${encodeURIComponent(l2Prefix)}`, null)
 
-  parseL2Phrase = (l2Phrase: string) : Promise<MorphemeList> =>
+  parseL2Phrase = (l2Phrase: string): Promise<MorphemeList> =>
     sendQuery('GET', `${this.baseUrl}/morphemes` +
       `?l2_phrase=${encodeURIComponent(l2Phrase)}`, null)
 }
