@@ -127,8 +127,11 @@ export default class App extends React.PureComponent<Props> {
     return <HashRouter>
       <div className="App">
         <Link to="/cards">Cards</Link>
+        {' - '}
         <Link to="/challenges">Challenges</Link>
+        {' - '}
         <Link to="/given1type2">Given1Type2</Link>
+        {' - '}
         <Link to="/morphemes">Morphemes</Link>
         <br/>
 
