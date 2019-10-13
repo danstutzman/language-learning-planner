@@ -34,6 +34,7 @@ export const EMPTY_MORPHEME_LIST: MorphemeList = {
 }
 
 export interface Answer {
+  id?: number,
   type: string,
   answeredAt: Date,
   answeredL2: string,
@@ -50,6 +51,7 @@ export interface BackendProps {
   deleteMorpheme: (id: number) => Promise<void>,
   getTopCardForGiven1Type2: () => Promise<Card>,
   guessMorphemes: (l2Prefix: string) => Promise<MorphemeList>
+  listAnswers: () => Promise<AnswerList>
   listCards: () => Promise<CardList>
   listMorphemes: () => Promise<MorphemeList>
   parseL2Phrase: (l2Phrase: string) => Promise<MorphemeList>
@@ -57,6 +59,10 @@ export interface BackendProps {
   showMorpheme: (id: number) => Promise<Morpheme>
   updateCard: (card: Card) => Promise<Card>,
   updateMorpheme: (morpheme: Morpheme) => Promise<Morpheme>
+}
+
+export interface AnswerList {
+  answers: Array<Answer>
 }
 
 export interface CardList {
@@ -91,6 +97,7 @@ export default class Backend {
       deleteMorpheme: this.deleteMorpheme,
       getTopCardForGiven1Type2: this.getTopCardForGiven1Type2,
       guessMorphemes: this.guessMorphemes,
+      listAnswers: this.listAnswers,
       listCards: this.listCards,
       listMorphemes: this.listMorphemes,
       parseL2Phrase: this.parseL2Phrase,
@@ -247,4 +254,7 @@ export default class Backend {
 
   answerGiven1Type2 = (answer: Answer): Promise<void> =>
     sendQuery('POST', `${this.baseUrl}/answers`, answer)
+
+  listAnswers = (): Promise<AnswerList> =>
+    sendQuery('GET', `${this.baseUrl}/answers`, null)
 }
