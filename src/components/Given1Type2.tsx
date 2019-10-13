@@ -1,10 +1,10 @@
-import {Answer} from '../backend/Backend'
 import {Card} from '../backend/Backend'
+import {Challenge} from '../backend/Backend'
 import * as React from 'react'
 
 interface Props {
   card: Card
-  answer: (answer: Answer) => Promise<void>,
+  answer: (answer: Challenge) => Promise<void>,
 }
 
 interface State {
@@ -14,7 +14,7 @@ interface State {
 
 export default class Given1Type2 extends React.PureComponent<Props, State> {
   answeredL2Element: any
-  timeoutToShowMnemonic: number
+  timeoutToShowMnemonic: any
 
   constructor(props: Props) {
     super(props)

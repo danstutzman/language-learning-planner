@@ -1,11 +1,11 @@
-import {AnswerList} from '../backend/Backend'
-import AnswersView from './AnswersView'
 import Backend from '../backend/Backend'
 import {BackendProps} from '../backend/Backend'
 import {Card} from '../backend/Backend'
 import {CardList} from '../backend/Backend'
 import CardView from './CardView'
 import CardsView from './CardsView'
+import {ChallengeList} from '../backend/Backend'
+import ChallengesView from './ChallengesView'
 import {EMPTY_CARD} from '../backend/Backend'
 import {EMPTY_MORPHEME} from '../backend/Backend'
 import Given1Type2 from './Given1Type2'
@@ -54,14 +54,6 @@ export default class App extends React.PureComponent<Props> {
     }
   }
 
-  renderAnswersView = (args: any) => {
-    const promise = this.props.backend.listAnswers()
-    return React.createElement(() => {
-      const answerList = usePromise<AnswerList>(promise).value
-      return <AnswersView answerList={answerList} />
-    })
-  }
-
   renderCardsView = (args: any) => {
     const promise = this.props.backend.listCards()
     return React.createElement(() => {
@@ -70,6 +62,14 @@ export default class App extends React.PureComponent<Props> {
         cardList={cardList}
         deleteCard={this.props.backend.deleteCard}
         history={args.history} />
+    })
+  }
+
+  renderChallengesView = (args: any) => {
+    const promise = this.props.backend.listChallenges()
+    return React.createElement(() => {
+      const challengeList = usePromise<ChallengeList>(promise).value
+      return <ChallengesView challengeList={challengeList} />
     })
   }
 
@@ -125,15 +125,15 @@ export default class App extends React.PureComponent<Props> {
   render() {
     return <HashRouter>
       <div className="App">
-        <Link to="/answers">Answers</Link>
         <Link to="/cards">Cards</Link>
+        <Link to="/challenges">Challenges</Link>
         <Link to="/given1type2">Given1Type2</Link>
         <Link to="/morphemes">Morphemes</Link>
         <br/>
 
-        <Route path="/answers" exact render={this.renderAnswersView} />
         <Route path="/cards" exact render={this.renderCardsView} />
         <Route path="/cards/:id" render={this.renderCardView} />
+        <Route path="/challenges" exact render={this.renderChallengesView} />
         <Route path="/given1type2" render={this.renderGiven1Type2} />
         <Route path="/morphemes" exact render={this.renderMorphemesView} />
         <Route path="/morphemes/:id" render={this.renderMorphemeView} />
