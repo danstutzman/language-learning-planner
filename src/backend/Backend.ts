@@ -37,6 +37,7 @@ export interface Answer {
   answeredAt: Date,
   cardId: number,
   l2: string,
+  showedMnemonic: boolean,
 }
 
 export interface BackendProps {

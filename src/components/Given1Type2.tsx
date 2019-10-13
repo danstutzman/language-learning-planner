@@ -9,28 +9,31 @@ interface Props {
 
 interface State {
   answeredL2: string,
-  showedMnemonicAt: Date | null,
+  showMnemonic: boolean,
 }
 
 export default class Given1Type2 extends React.PureComponent<Props, State> {
   answeredL2Element: any
+  timeoutToShowMnemonic: number
 
   constructor(props: Props) {
     super(props)
     this.state = {
       answeredL2: '',
-      showedMnemonicAt: null,
+      showMnemonic: false,
     }
   }
 
   componentDidMount() {
     this.answeredL2Element.focus()
-    setTimeout(() => this.setState({ showedMnemonicAt: new Date() }), 2000)
+    this.timeoutToShowMnemonic = setTimeout(
+      () => this.setState({ showMnemonic: true }), 2000)
   }
 
   onChangeAnsweredL2 = (e: any) => {
     const answeredL2 = e.target.value
     this.setState({ answeredL2 })
+    clearTimeout(this.timeoutToShowMnemonic)
   }
 
   onKeyDownAnsweredL2 = (e: any) => {
@@ -39,6 +42,7 @@ export default class Given1Type2 extends React.PureComponent<Props, State> {
         cardId: this.props.card.id,
         l2: this.state.answeredL2,
         answeredAt: new Date(),
+        showedMnemonic: this.state.showMnemonic,
       }).then(() => window.location.reload())
     }
   }
@@ -48,7 +52,7 @@ export default class Given1Type2 extends React.PureComponent<Props, State> {
 
     return <div>
       <h1>{l1}</h1>
-      {this.state.showedMnemonicAt &&
+      {this.state.showMnemonic &&
         <h2>{mnemonic12}</h2>}
       <input 
         type='text' 
