@@ -30,6 +30,10 @@ export default class Given1Type2 extends React.PureComponent<Props, State> {
       () => this.setState({ showMnemonic: true }), 2000)
   }
 
+  componentWillUnmount() {
+    clearTimeout(this.timeoutToShowMnemonic)
+  }
+
   onChangeAnsweredL2 = (e: any) => {
     const answeredL2 = e.target.value
     this.setState({ answeredL2 })
