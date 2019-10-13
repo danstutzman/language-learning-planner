@@ -57,7 +57,7 @@ function handleResponse(response: Response): Promise<any> {
     try {
       parsed = JSON.parse(text)
     } catch (e) {
-      console.error('SyncFailure', { error: e })
+      console.error("Couldn't parse JSON", text)
       throw new Error('BAD_RESPONSE_JSON')
     }
 
