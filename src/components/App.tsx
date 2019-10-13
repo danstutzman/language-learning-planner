@@ -4,6 +4,7 @@ import {Card} from '../backend/Backend'
 import {CardList} from '../backend/Backend'
 import CardView from './CardView'
 import CardsView from './CardsView'
+import {Challenge} from '../backend/Backend'
 import {ChallengeList} from '../backend/Backend'
 import ChallengesView from './ChallengesView'
 import {EMPTY_CARD} from '../backend/Backend'
@@ -74,13 +75,13 @@ export default class App extends React.PureComponent<Props> {
   }
 
   renderGiven1Type2 = (args: any) => {
-    const promise = this.props.backend.getTopCardForGiven1Type2()
+    const promise = this.props.backend.getTopChallengeForGiven1Type2()
     return React.createElement(() => {
-      const card = usePromise<Card>(promise).value
-      if (!card) { return <div>Loading...</div> }
+      const challenge = usePromise<Challenge>(promise).value
+      if (!challenge) { return <div>Loading...</div> }
       return <Given1Type2
         answer={this.props.backend.answerGiven1Type2}
-        card={card} />
+        challenge={challenge} />
     })
   }
 

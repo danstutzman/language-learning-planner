@@ -41,6 +41,7 @@ export interface Challenge {
   cardId: number,
   l2: string,
   showedMnemonic: boolean,
+  card?: Card,
 }
 
 export interface BackendProps {
@@ -49,7 +50,7 @@ export interface BackendProps {
   createMorpheme: (morpheme: Morpheme) => Promise<Morpheme>,
   deleteCard: (id: number) => Promise<void>,
   deleteMorpheme: (id: number) => Promise<void>,
-  getTopCardForGiven1Type2: () => Promise<Card>,
+  getTopChallengeForGiven1Type2: () => Promise<Challenge>,
   guessMorphemes: (l2Prefix: string) => Promise<MorphemeList>
   listChallenges: () => Promise<ChallengeList>
   listCards: () => Promise<CardList>
@@ -95,7 +96,7 @@ export default class Backend {
       createMorpheme: this.createMorpheme,
       deleteCard: this.deleteCard,
       deleteMorpheme: this.deleteMorpheme,
-      getTopCardForGiven1Type2: this.getTopCardForGiven1Type2,
+      getTopChallengeForGiven1Type2: this.getTopChallengeForGiven1Type2,
       guessMorphemes: this.guessMorphemes,
       listCards: this.listCards,
       listChallenges: this.listChallenges,
@@ -249,7 +250,7 @@ export default class Backend {
     sendQuery('GET', `${this.baseUrl}/morphemes` +
       `?l2_phrase=${encodeURIComponent(l2Phrase)}`, null)
 
-  getTopCardForGiven1Type2 = (): Promise<Card> =>
+  getTopChallengeForGiven1Type2 = (): Promise<Challenge> =>
     sendQuery('GET', `${this.baseUrl}/challenges/top`, null)
 
   answerGiven1Type2 = (challenge: Challenge): Promise<void> =>

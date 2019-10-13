@@ -1,10 +1,9 @@
-import {Card} from '../backend/Backend'
 import {Challenge} from '../backend/Backend'
 import * as React from 'react'
 
 interface Props {
-  card: Card
   answer: (answer: Challenge) => Promise<void>,
+  challenge: Challenge
 }
 
 interface State {
@@ -44,7 +43,7 @@ export default class Given1Type2 extends React.PureComponent<Props, State> {
     if (e.key === 'Enter') {
       this.props.answer({
         type: 'Given1Type2',
-        cardId: this.props.card.id,
+        cardId: this.props.challenge.cardId,
         l2: this.state.answeredL2,
         answeredL2: this.state.answeredL2,
         answeredAt: new Date(),
@@ -54,7 +53,7 @@ export default class Given1Type2 extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { l1, l2, mnemonic12 } = this.props.card
+    const { l1, l2, mnemonic12 } = this.props.challenge.card
 
     return <div>
       <h1>{l1}</h1>
