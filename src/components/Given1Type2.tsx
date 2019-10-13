@@ -9,6 +9,7 @@ interface Props {
 
 interface State {
   answeredL2: string,
+  showedMnemonicAt: Date | null,
 }
 
 export default class Given1Type2 extends React.PureComponent<Props, State> {
@@ -18,11 +19,13 @@ export default class Given1Type2 extends React.PureComponent<Props, State> {
     super(props)
     this.state = {
       answeredL2: '',
+      showedMnemonicAt: null,
     }
   }
 
   componentDidMount() {
     this.answeredL2Element.focus()
+    setTimeout(() => this.setState({ showedMnemonicAt: new Date() }), 2000)
   }
 
   onChangeAnsweredL2 = (e: any) => {
@@ -41,10 +44,12 @@ export default class Given1Type2 extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { l1, l2 } = this.props.card
+    const { l1, l2, mnemonic12 } = this.props.card
 
     return <div>
       <h1>{l1}</h1>
+      {this.state.showedMnemonicAt &&
+        <h2>{mnemonic12}</h2>}
       <input 
         type='text' 
         ref={e => this.answeredL2Element = e}

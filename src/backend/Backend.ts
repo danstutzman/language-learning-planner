@@ -17,12 +17,14 @@ export interface Card {
   id?: number
   l1: string
   l2: string
+  mnemonic12: string,
   morphemes: Array<Morpheme>
 }
 
 export const EMPTY_CARD: Card = {
   l1: '',
   l2: '',
+  mnemonic12: '',
   morphemes: [],
 }
 
