@@ -31,11 +31,19 @@ export const EMPTY_MORPHEME_LIST: MorphemeList = {
   countWithoutLimit: 0,
 }
 
+export interface Answer {
+  answeredAt: Date,
+  cardId: number,
+  l2: string,
+}
+
 export interface BackendProps {
+  answerGiven1Type2: (answer: Answer) => Promise<void>,
   createCard: (card: Card) => Promise<Card>,
   createMorpheme: (morpheme: Morpheme) => Promise<Morpheme>,
   deleteCard: (id: number) => Promise<void>,
   deleteMorpheme: (id: number) => Promise<void>,
+  getTopCardForGiven1Type2: () => Promise<Card>,
   guessMorphemes: (l2Prefix: string) => Promise<MorphemeList>
   listCards: () => Promise<CardList>
   listMorphemes: () => Promise<MorphemeList>
@@ -71,10 +79,12 @@ export default class Backend {
     this.listCardsCache = {}
     this.listMorphemesCache = {}
     this.props = {
+      answerGiven1Type2: this.answerGiven1Type2,
       createCard: this.createCard,
       createMorpheme: this.createMorpheme,
       deleteCard: this.deleteCard,
       deleteMorpheme: this.deleteMorpheme,
+      getTopCardForGiven1Type2: this.getTopCardForGiven1Type2,
       guessMorphemes: this.guessMorphemes,
       listCards: this.listCards,
       listMorphemes: this.listMorphemes,
@@ -226,4 +236,10 @@ export default class Backend {
   parseL2Phrase = (l2Phrase: string): Promise<MorphemeList> =>
     sendQuery('GET', `${this.baseUrl}/morphemes` +
       `?l2_phrase=${encodeURIComponent(l2Phrase)}`, null)
+
+  getTopCardForGiven1Type2 = (): Promise<Card> =>
+    sendQuery('GET', `${this.baseUrl}/answers/top`, null)
+
+  answerGiven1Type2 = (answer: Answer): Promise<void> =>
+    sendQuery('POST', `${this.baseUrl}/answers`, answer)
 }

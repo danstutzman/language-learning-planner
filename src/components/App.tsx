@@ -6,6 +6,7 @@ import CardView from './CardView'
 import CardsView from './CardsView'
 import {EMPTY_CARD} from '../backend/Backend'
 import {EMPTY_MORPHEME} from '../backend/Backend'
+import Given1Type2 from './Given1Type2'
 import {HashRouter} from 'react-router-dom'
 import {Link} from 'react-router-dom'
 import {Morpheme} from '../backend/Backend'
@@ -62,6 +63,17 @@ export default class App extends React.PureComponent<Props> {
     })
   }
 
+  renderGiven1Type2 = (args: any) => {
+    const promise = this.props.backend.getTopCardForGiven1Type2()
+    return React.createElement(() => {
+      const card = usePromise<Card>(promise).value
+      if (!card) { return <div>Loading...</div> }
+      return <Given1Type2
+        answer={this.props.backend.answerGiven1Type2}
+        card={card} />
+    })
+  }
+
   renderMorphemeView = (args: any) => {
     const { id } = args.match.params
     const { backend } = this.props
@@ -104,11 +116,13 @@ export default class App extends React.PureComponent<Props> {
     return <HashRouter>
       <div className="App">
         <Link to="/cards">Cards</Link>
+        <Link to="/given1type2">Given1Type2</Link>
         <Link to="/morphemes">Morphemes</Link>
         <br/>
 
         <Route path="/cards" exact render={this.renderCardsView} />
         <Route path="/cards/:id" render={this.renderCardView} />
+        <Route path="/given1type2" render={this.renderGiven1Type2} />
         <Route path="/morphemes" exact render={this.renderMorphemesView} />
         <Route path="/morphemes/:id" render={this.renderMorphemeView} />
       </div>
