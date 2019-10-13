@@ -34,7 +34,9 @@ export const EMPTY_MORPHEME_LIST: MorphemeList = {
 }
 
 export interface Answer {
+  type: string,
   answeredAt: Date,
+  answeredL2: string,
   cardId: number,
   l2: string,
   showedMnemonic: boolean,

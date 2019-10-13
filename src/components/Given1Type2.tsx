@@ -39,8 +39,10 @@ export default class Given1Type2 extends React.PureComponent<Props, State> {
   onKeyDownAnsweredL2 = (e: any) => {
     if (e.key === 'Enter') {
       this.props.answer({
+        type: 'Given1Type2',
         cardId: this.props.card.id,
         l2: this.state.answeredL2,
+        answeredL2: this.state.answeredL2,
         answeredAt: new Date(),
         showedMnemonic: this.state.showMnemonic,
       }).then(() => window.location.reload())
