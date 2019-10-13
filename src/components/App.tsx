@@ -10,6 +10,7 @@ import ChallengesView from './ChallengesView'
 import {EMPTY_CARD} from '../backend/Backend'
 import {EMPTY_MORPHEME} from '../backend/Backend'
 import Given1Type2 from './Given1Type2'
+import Given2Type1 from './Given2Type1'
 import {HashRouter} from 'react-router-dom'
 import {Link} from 'react-router-dom'
 import {Morpheme} from '../backend/Backend'
@@ -75,12 +76,23 @@ export default class App extends React.PureComponent<Props> {
   }
 
   renderGiven1Type2 = (args: any) => {
-    const promise = this.props.backend.getTopChallengeForGiven1Type2()
+    const promise = this.props.backend.getTopChallenge('Given1Type2')
     return React.createElement(() => {
       const challenge = usePromise<Challenge>(promise).value
       if (!challenge) { return <div>Loading...</div> }
       return <Given1Type2
-        answer={this.props.backend.answerGiven1Type2}
+        answer={this.props.backend.answerChallenge}
+        challenge={challenge} />
+    })
+  }
+
+  renderGiven2Type1 = (args: any) => {
+    const promise = this.props.backend.getTopChallenge('Given2Type1')
+    return React.createElement(() => {
+      const challenge = usePromise<Challenge>(promise).value
+      if (!challenge) { return <div>Loading...</div> }
+      return <Given2Type1
+        answer={this.props.backend.answerChallenge}
         challenge={challenge} />
     })
   }
@@ -132,6 +144,8 @@ export default class App extends React.PureComponent<Props> {
         {' - '}
         <Link to="/given1type2">Given1Type2</Link>
         {' - '}
+        <Link to="/given2type1">Given2Type1</Link>
+        {' - '}
         <Link to="/morphemes">Morphemes</Link>
         <br/>
 
@@ -139,6 +153,7 @@ export default class App extends React.PureComponent<Props> {
         <Route path="/cards/:id" render={this.renderCardView} />
         <Route path="/challenges" exact render={this.renderChallengesView} />
         <Route path="/given1type2" render={this.renderGiven1Type2} />
+        <Route path="/given2type1" render={this.renderGiven2Type1} />
         <Route path="/morphemes" exact render={this.renderMorphemesView} />
         <Route path="/morphemes/:id" render={this.renderMorphemeView} />
       </div>

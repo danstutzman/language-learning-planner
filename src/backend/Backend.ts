@@ -35,21 +35,21 @@ export interface Challenge {
   id?: number,
   type: string,
   answeredAt: Date,
-  answeredL2: string,
+  answeredL1?: string,
+  answeredL2?: string,
   cardId: number,
-  l2: string,
   showedMnemonic: boolean,
   mnemonic: string | null,
   card?: Card,
 }
 
 export interface BackendProps {
-  answerGiven1Type2: (challenge: Challenge) => Promise<void>,
+  answerChallenge: (challenge: Challenge) => Promise<void>,
   createCard: (card: Card) => Promise<Card>,
   createMorpheme: (morpheme: Morpheme) => Promise<Morpheme>,
   deleteCard: (id: number) => Promise<void>,
   deleteMorpheme: (id: number) => Promise<void>,
-  getTopChallengeForGiven1Type2: () => Promise<Challenge>,
+  getTopChallenge: (type: string) => Promise<Challenge>,
   guessMorphemes: (l2Prefix: string) => Promise<MorphemeList>
   listChallenges: () => Promise<ChallengeList>
   listCards: () => Promise<CardList>
@@ -90,12 +90,12 @@ export default class Backend {
     this.listCardsCache = {}
     this.listMorphemesCache = {}
     this.props = {
-      answerGiven1Type2: this.answerGiven1Type2,
+      answerChallenge: this.answerChallenge,
       createCard: this.createCard,
       createMorpheme: this.createMorpheme,
       deleteCard: this.deleteCard,
       deleteMorpheme: this.deleteMorpheme,
-      getTopChallengeForGiven1Type2: this.getTopChallengeForGiven1Type2,
+      getTopChallenge: this.getTopChallenge,
       guessMorphemes: this.guessMorphemes,
       listCards: this.listCards,
       listChallenges: this.listChallenges,
@@ -249,10 +249,11 @@ export default class Backend {
     sendQuery('GET', `${this.baseUrl}/morphemes` +
       `?l2_phrase=${encodeURIComponent(l2Phrase)}`, null)
 
-  getTopChallengeForGiven1Type2 = (): Promise<Challenge> =>
-    sendQuery('GET', `${this.baseUrl}/challenges/top`, null)
+  getTopChallenge = (type: string): Promise<Challenge> =>
+    sendQuery('GET', `${this.baseUrl}/challenges/top?` +
+      `type=${type}`, null)
 
-  answerGiven1Type2 = (challenge: Challenge): Promise<void> =>
+  answerChallenge = (challenge: Challenge): Promise<void> =>
     sendQuery('POST', `${this.baseUrl}/challenges`, challenge)
 
   listChallenges = (): Promise<ChallengeList> =>

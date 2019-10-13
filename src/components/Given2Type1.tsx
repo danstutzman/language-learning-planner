@@ -7,24 +7,24 @@ interface Props {
 }
 
 interface State {
-  answeredL2: string,
+  answeredL1: string,
   showMnemonic: boolean,
 }
 
-export default class Given1Type2 extends React.PureComponent<Props, State> {
-  answeredL2Element: any
+export default class Given2Type1 extends React.PureComponent<Props, State> {
+  answeredL1Element: any
   timeoutToShowMnemonic: any
 
   constructor(props: Props) {
     super(props)
     this.state = {
-      answeredL2: '',
+      answeredL1: '',
       showMnemonic: false,
     }
   }
 
   componentDidMount() {
-    this.answeredL2Element.focus()
+    this.answeredL1Element.focus()
     this.timeoutToShowMnemonic = setTimeout(
       () => this.setState({ showMnemonic: true }), 2000)
   }
@@ -33,19 +33,19 @@ export default class Given1Type2 extends React.PureComponent<Props, State> {
     clearTimeout(this.timeoutToShowMnemonic)
   }
 
-  onChangeAnsweredL2 = (e: any) => {
-    const answeredL2 = e.target.value
-    this.setState({ answeredL2 })
+  onChangeAnsweredL1 = (e: any) => {
+    const answeredL1 = e.target.value
+    this.setState({ answeredL1 })
     clearTimeout(this.timeoutToShowMnemonic)
   }
 
-  onKeyDownAnsweredL2 = (e: any) => {
+  onKeyDownAnsweredL1 = (e: any) => {
     if (e.key === 'Enter') {
       const { challenge } = this.props
       this.props.answer({
-        type: 'Given1Type2',
+        type: 'Given2Type1',
         cardId: challenge.cardId,
-        answeredL2: this.state.answeredL2,
+        answeredL1: this.state.answeredL1,
         answeredAt: new Date(),
         showedMnemonic: this.state.showMnemonic,
         mnemonic: challenge.mnemonic,
@@ -55,18 +55,18 @@ export default class Given1Type2 extends React.PureComponent<Props, State> {
 
   render() {
     const { challenge } = this.props
-    const { l1, l2 } = challenge.card
+    const { l2 } = challenge.card
 
     return <div>
-      <h1>{l1}</h1>
+      <h1>{l2}</h1>
       {this.state.showMnemonic &&
         <h2>{challenge.mnemonic}</h2>}
       <input 
         type='text' 
-        ref={e => this.answeredL2Element = e}
-        value={this.state.answeredL2} 
-        onChange={this.onChangeAnsweredL2}
-        onKeyDown={this.onKeyDownAnsweredL2}
+        ref={e => this.answeredL1Element = e}
+        value={this.state.answeredL1} 
+        onChange={this.onChangeAnsweredL1}
+        onKeyDown={this.onKeyDownAnsweredL1}
         autoFocus />
     </div>
   }
