@@ -17,14 +17,12 @@ export interface Card {
   id?: number
   l1: string
   l2: string
-  mnemonic12: string,
   morphemes: Array<Morpheme>
 }
 
 export const EMPTY_CARD: Card = {
   l1: '',
   l2: '',
-  mnemonic12: '',
   morphemes: [],
 }
 
@@ -41,6 +39,7 @@ export interface Challenge {
   cardId: number,
   l2: string,
   showedMnemonic: boolean,
+  mnemonic: string | null,
   card?: Card,
 }
 

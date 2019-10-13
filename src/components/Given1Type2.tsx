@@ -41,24 +41,27 @@ export default class Given1Type2 extends React.PureComponent<Props, State> {
 
   onKeyDownAnsweredL2 = (e: any) => {
     if (e.key === 'Enter') {
+      const { challenge } = this.props
       this.props.answer({
         type: 'Given1Type2',
-        cardId: this.props.challenge.cardId,
+        cardId: challenge.cardId,
         l2: this.state.answeredL2,
         answeredL2: this.state.answeredL2,
         answeredAt: new Date(),
         showedMnemonic: this.state.showMnemonic,
+        mnemonic: challenge.mnemonic,
       }).then(() => window.location.reload())
     }
   }
 
   render() {
-    const { l1, l2, mnemonic12 } = this.props.challenge.card
+    const { challenge } = this.props
+    const { l1, l2 } = challenge.card
 
     return <div>
       <h1>{l1}</h1>
       {this.state.showMnemonic &&
-        <h2>{mnemonic12}</h2>}
+        <h2>{challenge.mnemonic}</h2>}
       <input 
         type='text' 
         ref={e => this.answeredL2Element = e}
