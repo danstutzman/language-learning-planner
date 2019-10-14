@@ -32,19 +32,33 @@ export const EMPTY_MORPHEME_LIST: MorphemeList = {
 }
 
 export interface Challenge {
-  id?: number,
+  id: number,
   type: string,
+  cardId: number,
+  card: Card,
+
+  expectation: string,
+  hideUntil: Date,
+  mnemonic: string | null,
+
   answeredAt: Date,
+  answeredL1: string | null,
+  answeredL2: string | null,
+  showedMnemonic: boolean,
+
+  grade: string,
+}
+
+export interface ChallengeUpdate {
+  id: number,
+  answeredAt?: Date,
   answeredL1?: string,
   answeredL2?: string,
-  cardId: number,
-  showedMnemonic: boolean,
-  mnemonic: string | null,
-  card?: Card,
+  grade?: string,
+  showedMnemonic?: boolean,
 }
 
 export interface BackendProps {
-  answerChallenge: (challenge: Challenge) => Promise<void>,
   createCard: (card: Card) => Promise<Card>,
   createMorpheme: (morpheme: Morpheme) => Promise<Morpheme>,
   deleteCard: (id: number) => Promise<void>,
@@ -58,6 +72,7 @@ export interface BackendProps {
   showCard: (id: number) => Promise<Card>
   showMorpheme: (id: number) => Promise<Morpheme>
   updateCard: (card: Card) => Promise<Card>,
+  updateChallenge: (challenge: Challenge) => Promise<void>,
   updateMorpheme: (morpheme: Morpheme) => Promise<Morpheme>
 }
 
@@ -90,7 +105,6 @@ export default class Backend {
     this.listCardsCache = {}
     this.listMorphemesCache = {}
     this.props = {
-      answerChallenge: this.answerChallenge,
       createCard: this.createCard,
       createMorpheme: this.createMorpheme,
       deleteCard: this.deleteCard,
@@ -104,6 +118,7 @@ export default class Backend {
       showCard: this.showCard,
       showMorpheme: this.showMorpheme,
       updateCard: this.updateCard,
+      updateChallenge: this.updateChallenge,
       updateMorpheme: this.updateMorpheme,
     }
     this.showCardCache = {}
@@ -253,8 +268,10 @@ export default class Backend {
     sendQuery('GET', `${this.baseUrl}/challenges/top?` +
       `type=${type}`, null)
 
-  answerChallenge = (challenge: Challenge): Promise<void> =>
-    sendQuery('POST', `${this.baseUrl}/challenges`, challenge)
+  updateChallenge = (update: ChallengeUpdate): Promise<void> =>
+    sendQuery('PATCH',
+      `${this.baseUrl}/challenges/${update.id}`, update)
+      .then(this.refresh)
 
   listChallenges = (): Promise<ChallengeList> =>
     sendQuery('GET', `${this.baseUrl}/challenges`, null)

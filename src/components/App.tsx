@@ -71,7 +71,9 @@ export default class App extends React.PureComponent<Props> {
     const promise = this.props.backend.listChallenges()
     return React.createElement(() => {
       const challengeList = usePromise<ChallengeList>(promise).value
-      return <ChallengesView challengeList={challengeList} />
+      return <ChallengesView
+        challengeList={challengeList}
+        updateChallenge={this.props.backend.updateChallenge} />
     })
   }
 
@@ -81,8 +83,8 @@ export default class App extends React.PureComponent<Props> {
       const challenge = usePromise<Challenge>(promise).value
       if (!challenge) { return <div>Loading...</div> }
       return <Given1Type2
-        answer={this.props.backend.answerChallenge}
-        challenge={challenge} />
+        challenge={challenge}
+        updateChallenge={this.props.backend.updateChallenge} />
     })
   }
 
@@ -92,7 +94,7 @@ export default class App extends React.PureComponent<Props> {
       const challenge = usePromise<Challenge>(promise).value
       if (!challenge) { return <div>Loading...</div> }
       return <Given2Type1
-        answer={this.props.backend.answerChallenge}
+        updateChallenge={this.props.backend.updateChallenge}
         challenge={challenge} />
     })
   }

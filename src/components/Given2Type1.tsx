@@ -1,9 +1,10 @@
 import {Challenge} from '../backend/Backend'
+import {ChallengeUpdate} from '../backend/Backend'
 import * as React from 'react'
 
 interface Props {
-  answer: (answer: Challenge) => Promise<void>,
   challenge: Challenge
+  updateChallenge: (update: ChallengeUpdate) => Promise<void>,
 }
 
 interface State {
@@ -42,13 +43,11 @@ export default class Given2Type1 extends React.PureComponent<Props, State> {
   onKeyDownAnsweredL1 = (e: any) => {
     if (e.key === 'Enter') {
       const { challenge } = this.props
-      this.props.answer({
-        type: 'Given2Type1',
-        cardId: challenge.cardId,
+      this.props.updateChallenge({
+        id: challenge.id,
         answeredL1: this.state.answeredL1,
         answeredAt: new Date(),
         showedMnemonic: this.state.showMnemonic,
-        mnemonic: challenge.mnemonic,
       }).then(() => window.location.reload())
     }
   }
