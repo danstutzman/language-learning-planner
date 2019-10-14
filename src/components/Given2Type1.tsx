@@ -59,7 +59,7 @@ export default class Given2Type1 extends React.PureComponent<Props, State> {
     return <div>
       <h1>{l2}</h1>
       {this.state.showMnemonic &&
-        <h2>{challenge.mnemonic}</h2>}
+        <h2>{challenge.card.mnemonic21}</h2>}
       <input 
         type='text' 
         ref={e => this.answeredL1Element = e}
