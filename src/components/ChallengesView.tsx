@@ -18,7 +18,7 @@ export default class ChallengesView extends React.PureComponent<Props> {
         <thead>
           <tr>
             <th>Type</th>
-            <th>Card ID</th>
+            <th>Card L2</th>
             <th>Answered L1</th>
             <th>Answered L2</th>
             <th>Answered At</th>
@@ -30,7 +30,7 @@ export default class ChallengesView extends React.PureComponent<Props> {
           {challenges.map(challenge =>
             <tr key={challenge.id}>
               <td>{challenge.type}</td>
-              <td>{challenge.cardId}</td>
+              <td>{challenge.card.l2}</td>
               <td>{challenge.answeredL1}</td>
               <td>{challenge.answeredL2}</td>
               <td>{challenge.answeredAt}</td>
