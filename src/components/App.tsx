@@ -44,11 +44,12 @@ export default class App extends React.PureComponent<Props> {
     } else {
       const promise = backend.showCard(parseInt(id, 10))
       return React.createElement(() => {
-        const card = usePromise<Card>(promise).value
-        if (!card) { return <div>Loading...</div> }
+        const resolved = usePromise<Card>(promise)
+        if (resolved.error) { return <div>Error {resolved.error.message}</div> }
+        if (!resolved.value) { return <div>Loading...</div> }
         return <CardView
           close={args.history.goBack}
-          card={card}
+          card={resolved.value}
           guessMorphemes={backend.guessMorphemes}
           parseL2Phrase={backend.parseL2Phrase}
           save={backend.updateCard} />
@@ -59,9 +60,11 @@ export default class App extends React.PureComponent<Props> {
   renderCardsView = (args: any) => {
     const promise = this.props.backend.listCards()
     return React.createElement(() => {
-      const cardList = usePromise<CardList>(promise).value
+      const resolved = usePromise<CardList>(promise)
+      if (resolved.error) { return <div>Error {resolved.error.message}</div> }
+      if (!resolved.value) { return <div>Loading...</div> }
       return <CardsView
-        cardList={cardList}
+        cardList={resolved.value}
         deleteCard={this.props.backend.deleteCard}
         history={args.history} />
     })
@@ -70,9 +73,11 @@ export default class App extends React.PureComponent<Props> {
   renderChallengesView = (args: any) => {
     const promise = this.props.backend.listChallenges()
     return React.createElement(() => {
-      const challengeList = usePromise<ChallengeList>(promise).value
+      const resolved = usePromise<ChallengeList>(promise)
+      if (resolved.error) { return <div>Error {resolved.error.message}</div> }
+      if (!resolved.value) { return <div>Loading...</div> }
       return <ChallengesView
-        challengeList={challengeList}
+        challengeList={resolved.value}
         updateChallenge={this.props.backend.updateChallenge} />
     })
   }
@@ -80,10 +85,11 @@ export default class App extends React.PureComponent<Props> {
   renderGiven1Type2 = (args: any) => {
     const promise = this.props.backend.getTopChallenge('Given1Type2')
     return React.createElement(() => {
-      const challenge = usePromise<Challenge>(promise).value
-      if (!challenge) { return <div>Loading...</div> }
+      const resolved = usePromise<Challenge>(promise)
+      if (resolved.error) { return <div>Error {resolved.error.message}</div> }
+      if (!resolved.value) { return <div>Loading...</div> }
       return <Given1Type2
-        challenge={challenge}
+        challenge={resolved.value}
         updateChallenge={this.props.backend.updateChallenge} />
     })
   }
@@ -91,11 +97,12 @@ export default class App extends React.PureComponent<Props> {
   renderGiven2Type1 = (args: any) => {
     const promise = this.props.backend.getTopChallenge('Given2Type1')
     return React.createElement(() => {
-      const challenge = usePromise<Challenge>(promise).value
-      if (!challenge) { return <div>Loading...</div> }
+      const resolved = usePromise<Challenge>(promise)
+      if (resolved.error) { return <div>Error {resolved.error.message}</div> }
+      if (!resolved.value) { return <div>Loading...</div> }
       return <Given2Type1
         updateChallenge={this.props.backend.updateChallenge}
-        challenge={challenge} />
+        challenge={resolved.value} />
     })
   }
 
@@ -116,11 +123,12 @@ export default class App extends React.PureComponent<Props> {
     } else {
       const promise = backend.showMorpheme(parseInt(id, 10))
       return React.createElement(() => {
-        const morpheme = usePromise<Morpheme>(promise).value
-        if (!morpheme) { return <div>Loading...</div> }
+        const resolved = usePromise<Morpheme>(promise)
+        if (resolved.error) { return <div>Error {resolved.error.message}</div> }
+        if (!resolved) { return <div>Loading...</div> }
         return <MorphemeView
           close={args.history.goBack}
-          morpheme={morpheme}
+          morpheme={resolved.value}
           save={backend.updateMorpheme} />
       })
     }
@@ -129,11 +137,13 @@ export default class App extends React.PureComponent<Props> {
   renderMorphemesView = (args: any) => {
     const promise = this.props.backend.listMorphemes()
     return React.createElement(() => {
-      const morphemeList = usePromise<MorphemeList>(promise).value
+      const resolved = usePromise<MorphemeList>(promise)
+      if (resolved.error) { return <div>Error {resolved.error.message}</div> }
+      if (!resolved) { return <div>Loading...</div> }
       return <MorphemesView
         deleteMorpheme={this.props.backend.deleteMorpheme}
         history={args.history}
-        morphemeList={morphemeList} />
+        morphemeList={resolved.value} />
     })
   }
 
