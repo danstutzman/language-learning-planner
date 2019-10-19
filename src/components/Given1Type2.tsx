@@ -40,6 +40,18 @@ export default class Given1Type2 extends React.PureComponent<Props, State> {
     clearTimeout(this.timeoutToShowMnemonic)
   }
 
+  gradeAnswer = (): string => {
+    const { challenge } = this.props
+    const { answeredL2 } = this.state
+    if (answeredL2 === '') {
+      return 'BLANK'
+    } else if (answeredL2.toLowerCase() === challenge.card.l2.toLowerCase()) {
+      return 'RIGHT'
+    } else {
+      return null
+    }
+  }
+
   onKeyDownAnsweredL2 = (e: any) => {
     if (e.key === 'Enter') {
       const { challenge } = this.props
@@ -48,6 +60,7 @@ export default class Given1Type2 extends React.PureComponent<Props, State> {
         answeredL2: this.state.answeredL2,
         answeredAt: new Date(),
         showedMnemonic: this.state.showMnemonic,
+        grade: this.gradeAnswer(),
       }).then(() => window.location.reload())
     }
   }
