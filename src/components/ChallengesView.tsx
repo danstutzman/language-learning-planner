@@ -64,6 +64,7 @@ export default class ChallengesView extends React.PureComponent<Props> {
             <th>|</th>
             <th>Answered At</th>
             <th>Answered L1</th>
+            <th>Answered L2</th>
             <th>Grade</th>
           </tr>
         </thead>
@@ -79,6 +80,7 @@ export default class ChallengesView extends React.PureComponent<Props> {
               <td>|</td>
               <td>{challenge.answeredAt}</td>
               <td>{challenge.answeredL1}</td>
+              <td>{challenge.answeredL2}</td>
               <td>{this.renderGradeFields(challenge)}</td>
             </tr>
           )}
