@@ -10,24 +10,26 @@ export interface Props {
 }
 
 export default class ChallengesView extends React.PureComponent<Props> {
-  updateChallenge(id: number, grade: string) {
+  findChallengeByDataId = (e: any): Challenge => {
     const { challengeList } = this.props
+    const id: number = parseInt(e.target.getAttribute('data-id'), 10)
     const challenges = challengeList ? challengeList.challenges : []
     const challenge = challenges.find(c => c.id === id)
-    this.props.updateChallenge({
-      id: challenge.id,
-      grade,
-    })
+    return challenge
   }
 
   onClickRight = (e: any) => {
-    const id: number = parseInt(e.target.getAttribute('data-id'), 10)
-    this.updateChallenge(id, 'RIGHT')
+    const challenge = this.findChallengeByDataId(e)
+    const grade = challenge.showedMnemonic ?
+      'RIGHT_WITH_MNEMONIC' : 'RIGHT_WITHOUT_MNEMONIC'
+    this.props.updateChallenge({ id: challenge.id, grade })
   }
 
   onClickWrong = (e: any) => {
-    const id: number = parseInt(e.target.getAttribute('data-id'), 10)
-    this.updateChallenge(id, 'WRONG')
+    const challenge = this.findChallengeByDataId(e)
+    const grade = challenge.showedMnemonic ?
+      'WRONG_WITH_MNEMONIC' : 'WRONG_WITHOUT_MNEMONIC'
+    this.props.updateChallenge({ id: challenge.id, grade })
   }
 
   renderGradeFields(challenge: Challenge) {

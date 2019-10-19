@@ -53,11 +53,11 @@ export default class Given2Type1 extends React.PureComponent<Props, State> {
 
   gradeAnswer = (): string => {
     const { challenge } = this.props
-    const { answeredL1 } = this.state
+    const { answeredL1, showMnemonic } = this.state
     if (answeredL1 === '') {
       return 'BLANK'
     } else if (answeredL1.toLowerCase() === challenge.card.l1.toLowerCase()) {
-      return 'RIGHT'
+      return showMnemonic ? 'RIGHT_WITH_MNEMONIC' : 'RIGHT_WITHOUT_MNEMONIC'
     } else {
       return null
     }
