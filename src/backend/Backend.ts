@@ -42,7 +42,6 @@ export interface Challenge {
   card: Card,
 
   expectation: string,
-  hideUntil: Date,
 
   answeredAt: Date,
   answeredL1: string | null,

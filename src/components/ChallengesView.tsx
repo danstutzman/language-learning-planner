@@ -1,6 +1,7 @@
 import {Challenge} from '../backend/Backend'
 import {ChallengeUpdate} from '../backend/Backend'
 import {ChallengeList} from '../backend/Backend'
+import './ChallengesView.css'
 import * as React from 'react'
 
 export interface Props {
@@ -46,6 +47,23 @@ export default class ChallengesView extends React.PureComponent<Props> {
     }
   }
 
+  renderChallengeRows = (challenges: Array<Challenge>) =>
+    challenges.map((challenge: Challenge, i: number) => {
+      const className = (i === 0 ||
+        challenge.card.id !== challenges[i - 1].card.id) ?
+        'first-for-card-id' : ''
+      return <tr key={challenge.id} className={className}>
+        <td>{challenge.type}</td>
+        <td>{challenge.card.l2}</td>
+        <td>{challenge.card.l1}</td>
+        <td>{challenge.expectation}</td>
+        <td className='answered-at'>{challenge.answeredAt}</td>
+        <td>{challenge.answeredL1}</td>
+        <td>{challenge.answeredL2}</td>
+        <td className='grade'>{this.renderGradeFields(challenge)}</td>
+      </tr>
+    })
+
   render() {
     const { challengeList } = this.props
     const challenges = challengeList ? challengeList.challenges : []
@@ -60,31 +78,16 @@ export default class ChallengesView extends React.PureComponent<Props> {
             <th>Card L2</th>
             <th>Card L1</th>
             <th>Expectation</th>
-            <th>Hide Until</th>
-            <th>|</th>
-            <th>Answered At</th>
+            <th className='answered-at'>Answered At</th>
             <th>Answered L1</th>
             <th>Answered L2</th>
-            <th>Grade</th>
+            <th className='grade'>Grade</th>
           </tr>
         </thead>
         <tbody>
           {challengeList ? null : <tr><td>Loading...</td></tr>}
-          {challenges.map(challenge =>
-            <tr key={challenge.id}>
-              <td>{challenge.type}</td>
-              <td>{challenge.card.l2}</td>
-              <td>{challenge.card.l1}</td>
-              <td>{challenge.expectation}</td>
-              <td>{challenge.hideUntil}</td>
-              <td>|</td>
-              <td>{challenge.answeredAt}</td>
-              <td>{challenge.answeredL1}</td>
-              <td>{challenge.answeredL2}</td>
-              <td>{this.renderGradeFields(challenge)}</td>
-            </tr>
-          )}
-        </tbody>
+          {this.renderChallengeRows(challenges)}
+       </tbody>
       </table>
     </div>
   }
