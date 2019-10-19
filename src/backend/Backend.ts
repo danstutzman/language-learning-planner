@@ -51,6 +51,7 @@ export interface Challenge {
   lastKeyMillis: number | null,
 
   grade: string,
+  misconnectedCardId: number | null,
 }
 
 export interface ChallengeUpdate {
@@ -62,6 +63,7 @@ export interface ChallengeUpdate {
   shownAt?: Date,
   firstKeyMillis?: number,
   lastKeyMillis?: number,
+  misconnectedCardId?: number,
 }
 
 export interface BackendProps {
