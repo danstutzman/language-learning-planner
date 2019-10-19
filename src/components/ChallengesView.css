@@ -2,8 +2,8 @@ table {
   border-collapse: collapse;
 }
 
-th.answered-at,
-td.answered-at,
+th.shown-at,
+td.shown-at,
 th.grade,
 td.grade {
   border-left: 1px gray solid;

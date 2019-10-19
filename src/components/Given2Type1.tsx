@@ -8,8 +8,9 @@ interface Props {
 }
 
 interface State {
-  answeredL1: string,
-  showMnemonic: boolean,
+  answeredL1: string
+  showMnemonic: boolean
+  shownAt: Date
 }
 
 export default class Given2Type1 extends React.PureComponent<Props, State> {
@@ -21,6 +22,7 @@ export default class Given2Type1 extends React.PureComponent<Props, State> {
     this.state = {
       answeredL1: '',
       showMnemonic: false,
+      shownAt: new Date(),
     }
   }
 
@@ -43,11 +45,14 @@ export default class Given2Type1 extends React.PureComponent<Props, State> {
   onKeyDownAnsweredL1 = (e: any) => {
     if (e.key === 'Enter') {
       const { challenge } = this.props
+      const { answeredL1, showMnemonic, shownAt } = this.state
+
       this.props.updateChallenge({
-        id: challenge.id,
-        answeredL1: this.state.answeredL1,
-        answeredAt: new Date(),
-        showedMnemonic: this.state.showMnemonic,
+        id:             challenge.id,
+        answeredL1:     answeredL1,
+        answeredAt:     new Date(),
+        showedMnemonic: showMnemonic,
+        shownAt,
       }).then(() => window.location.reload())
     }
   }

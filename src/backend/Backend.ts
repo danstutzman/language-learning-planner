@@ -43,7 +43,8 @@ export interface Challenge {
 
   expectation: string,
 
-  answeredAt: Date,
+  shownAt: Date | null,
+  answeredAt: Date | null,
   answeredL1: string | null,
   answeredL2: string | null,
   showedMnemonic: boolean,
@@ -58,6 +59,7 @@ export interface ChallengeUpdate {
   answeredL2?: string,
   grade?: string,
   showedMnemonic?: boolean,
+  shownAt?: Date,
 }
 
 export interface BackendProps {

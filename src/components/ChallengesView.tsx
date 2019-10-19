@@ -57,7 +57,7 @@ export default class ChallengesView extends React.PureComponent<Props> {
         <td>{challenge.card.l2}</td>
         <td>{challenge.card.l1}</td>
         <td>{challenge.expectation}</td>
-        <td className='answered-at'>{challenge.answeredAt}</td>
+        <td className='shown-at'>{challenge.shownAt}</td>
         <td>{challenge.answeredL1}</td>
         <td>{challenge.answeredL2}</td>
         <td className='grade'>{this.renderGradeFields(challenge)}</td>
@@ -78,7 +78,7 @@ export default class ChallengesView extends React.PureComponent<Props> {
             <th>Card L2</th>
             <th>Card L1</th>
             <th>Expectation</th>
-            <th className='answered-at'>Answered At</th>
+            <th className='shown-at'>Shown At</th>
             <th>Answered L1</th>
             <th>Answered L2</th>
             <th className='grade'>Grade</th>
