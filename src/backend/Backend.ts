@@ -44,22 +44,24 @@ export interface Challenge {
   expectation: string,
 
   shownAt: Date | null,
-  answeredAt: Date | null,
   answeredL1: string | null,
   answeredL2: string | null,
   showedMnemonic: boolean,
+  firstKeyMillis: number | null,
+  lastKeyMillis: number | null,
 
   grade: string,
 }
 
 export interface ChallengeUpdate {
   id: number,
-  answeredAt?: Date,
   answeredL1?: string,
   answeredL2?: string,
   grade?: string,
   showedMnemonic?: boolean,
   shownAt?: Date,
+  firstKeyMillis?: number,
+  lastKeyMillis?: number,
 }
 
 export interface BackendProps {

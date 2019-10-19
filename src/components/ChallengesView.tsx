@@ -33,7 +33,7 @@ export default class ChallengesView extends React.PureComponent<Props> {
   renderGradeFields(challenge: Challenge) {
     if (challenge.grade) {
       return challenge.grade
-    } else if (challenge.answeredAt) {
+    } else if (challenge.shownAt) {
       return <div>
         <button data-id={challenge.id}
           onClick={this.onClickRight}>Right</button>

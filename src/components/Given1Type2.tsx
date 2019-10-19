@@ -11,6 +11,8 @@ interface State {
   answeredL2: string,
   showMnemonic: boolean,
   shownAt: Date,
+  firstKeyMillis: number | null,
+  lastKeyMillis: number | null,
 }
 
 export default class Given1Type2 extends React.PureComponent<Props, State> {
@@ -23,6 +25,8 @@ export default class Given1Type2 extends React.PureComponent<Props, State> {
       answeredL2: '',
       showMnemonic: false,
       shownAt: new Date(),
+      firstKeyMillis: null,
+      lastKeyMillis: null,
     }
   }
 
@@ -37,8 +41,13 @@ export default class Given1Type2 extends React.PureComponent<Props, State> {
   }
 
   onChangeAnsweredL2 = (e: any) => {
-    const answeredL2 = e.target.value
-    this.setState({ answeredL2 })
+    const answeredL2 = e.target.value as string
+    this.setState(prev => ({
+      answeredL2,
+      firstKeyMillis: prev.firstKeyMillis ||
+        (new Date().getTime() - prev.shownAt.getTime()),
+      lastKeyMillis: new Date().getTime() - prev.shownAt.getTime(),
+    }))
     clearTimeout(this.timeoutToShowMnemonic)
   }
 
@@ -57,15 +66,17 @@ export default class Given1Type2 extends React.PureComponent<Props, State> {
   onKeyDownAnsweredL2 = (e: any) => {
     if (e.key === 'Enter') {
       const { challenge } = this.props
-      const { answeredL2, showMnemonic, shownAt } = this.state
+      const { answeredL2, showMnemonic, shownAt, firstKeyMillis,
+        lastKeyMillis } = this.state
 
       this.props.updateChallenge({
         id:             challenge.id,
         answeredL2:     answeredL2,
-        answeredAt:     new Date(),
         showedMnemonic: showMnemonic,
         grade:          this.gradeAnswer(),
         shownAt,
+        firstKeyMillis,
+        lastKeyMillis,
       }).then(() => window.location.reload())
     }
   }
