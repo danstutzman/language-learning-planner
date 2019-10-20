@@ -32,7 +32,8 @@ export default class Given2Type1 extends React.PureComponent<Props, State> {
 
   componentDidMount() {
     this.answeredL1Element.focus()
-    if (this.props.challenge.card.mnemonic21 !== '') {
+    
+    if (this.props.challenge.card.mnemonic21) {
       this.timeoutToShowMnemonic = setTimeout(
         () => this.setState({ showMnemonic: true }), 2000)
     }
