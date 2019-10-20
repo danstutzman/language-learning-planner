@@ -66,6 +66,16 @@ export interface ChallengeUpdate {
   misconnectedCardId?: number,
 }
 
+export interface Skill {
+  card: Card
+  state: string
+  numFailures: number
+}
+
+export interface SkillList {
+  skills: Array<Skill>
+}
+
 export interface BackendProps {
   createCard: (card: Card) => Promise<Card>,
   createMorpheme: (morpheme: Morpheme) => Promise<Morpheme>,
@@ -76,6 +86,7 @@ export interface BackendProps {
   listChallenges: () => Promise<ChallengeList>
   listCards: () => Promise<CardList>
   listMorphemes: () => Promise<MorphemeList>
+  listSkills: () => Promise<SkillList>
   parseL2Phrase: (l2Phrase: string) => Promise<MorphemeList>
   showCard: (id: number) => Promise<Card>
   showMorpheme: (id: number) => Promise<Morpheme>
@@ -122,6 +133,7 @@ export default class Backend {
       listCards: this.listCards,
       listChallenges: this.listChallenges,
       listMorphemes: this.listMorphemes,
+      listSkills: this.listSkills,
       parseL2Phrase: this.parseL2Phrase,
       showCard: this.showCard,
       showMorpheme: this.showMorpheme,
@@ -177,6 +189,9 @@ export default class Backend {
       
     return listPromise
   }
+
+  listSkills = (): Promise<SkillList> =>
+    sendQuery('GET', `${this.baseUrl}/skills`, null)
 
   showCard = (id: number): Promise<Card> => {
     let cardPromise = this.showCardCache[id]

@@ -19,6 +19,8 @@ import MorphemeView from './MorphemeView'
 import MorphemesView from './MorphemesView'
 import * as React from 'react'
 import {Route} from 'react-router-dom'
+import {SkillList} from '../backend/Backend'
+import SkillsView from './SkillsView'
 import usePromise from 'react-promise'
 
 interface Props {
@@ -147,6 +149,17 @@ export default class App extends React.PureComponent<Props> {
     })
   }
 
+  renderSkillsView = (args: any) => {
+    const promise = this.props.backend.listSkills()
+    return React.createElement(() => {
+      const resolved = usePromise<SkillList>(promise)
+      if (resolved.error) { return <div>Error {resolved.error.message}</div> }
+      if (!resolved.value) { return <div>Loading...</div> }
+      return <SkillsView
+        skillList={resolved.value} />
+    })
+  }
+ 
   render() {
     return <HashRouter>
       <div className="App">
@@ -159,6 +172,8 @@ export default class App extends React.PureComponent<Props> {
         <Link to="/given2type1">Given2Type1</Link>
         {' - '}
         <Link to="/morphemes">Morphemes</Link>
+        {' - '}
+        <Link to="/skills">Skills</Link>
         <br/>
 
         <Route path="/cards" exact render={this.renderCardsView} />
@@ -168,6 +183,7 @@ export default class App extends React.PureComponent<Props> {
         <Route path="/given2type1" render={this.renderGiven2Type1} />
         <Route path="/morphemes" exact render={this.renderMorphemesView} />
         <Route path="/morphemes/:id" render={this.renderMorphemeView} />
+        <Route path="/skills" exact render={this.renderSkillsView} />
       </div>
     </HashRouter>
   }
