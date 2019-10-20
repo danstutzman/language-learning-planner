@@ -1,5 +1,6 @@
 import {Challenge} from '../backend/Backend'
 import {ChallengeUpdate} from '../backend/Backend'
+import './Given2Type1.css'
 import * as React from 'react'
 
 interface Props {
@@ -37,6 +38,8 @@ export default class Given2Type1 extends React.PureComponent<Props, State> {
       this.timeoutToShowMnemonic = setTimeout(
         () => this.setState({ showMnemonic: true }), 2000)
     }
+
+    this.speakL2()
   }
 
   componentWillUnmount() {
@@ -45,12 +48,14 @@ export default class Given2Type1 extends React.PureComponent<Props, State> {
 
   onChangeAnsweredL1 = (e: any) => {
     const answeredL1 = e.target.value as string
+
     this.setState(prev => ({
       answeredL1,
       firstKeyMillis: prev.firstKeyMillis ||
         (new Date().getTime() - prev.shownAt.getTime()),
       lastKeyMillis: new Date().getTime() - prev.shownAt.getTime(),
     }))
+
     clearTimeout(this.timeoutToShowMnemonic)
   }
 
@@ -84,12 +89,38 @@ export default class Given2Type1 extends React.PureComponent<Props, State> {
     }
   }
 
+  speakL2 = () => {
+    const l2 = this.props.challenge.card.l2
+    const utterance = new SpeechSynthesisUtterance(l2)
+
+    for (const voice of window.speechSynthesis.getVoices()) {
+      if (voice.lang.startsWith('es')) {
+        utterance.voice = voice
+        break
+      }
+    }
+
+    const voiceName = 'Angelica'
+    for (const voice of window.speechSynthesis.getVoices()) {
+      if (voice.name === voiceName) {
+        utterance.voice = voice
+      }
+    }
+
+    window.speechSynthesis.speak(utterance)
+  }
+
   render() {
     const { challenge } = this.props
     const { l2 } = challenge.card
 
     return <div>
-      <h1>{l2}</h1>
+      <button>Show L2</button>
+
+      {false && <h1>{l2}</h1>}
+
+      <button onClick={this.speakL2}>Speak L2</button>
+
       {this.state.showMnemonic &&
         <h2>{challenge.card.mnemonic21}</h2>}
       <input 
