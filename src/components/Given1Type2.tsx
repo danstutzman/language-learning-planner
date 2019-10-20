@@ -79,7 +79,7 @@ export default class Given1Type2 extends React.PureComponent<Props, State> {
         shownAt,
         firstKeyMillis,
         lastKeyMillis,
-      }).then(() => window.location.reload())
+      })
     }
   }
 
