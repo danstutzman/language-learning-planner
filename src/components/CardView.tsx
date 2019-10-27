@@ -88,7 +88,7 @@ export default class CardView extends React.PureComponent<Props, State> {
     let morphemes = this.state.morphemes.length ?
       this.state.morphemes : [EMPTY_MORPHEME]
 
-    return <div>
+    return <div className='CardView'>
       <h2>
         Card
         <button onClick={close}>X</button>

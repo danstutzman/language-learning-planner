@@ -1,14 +1,14 @@
-table {
+.ChallengesView table {
   border-collapse: collapse;
 }
 
-th.shown-at,
-td.shown-at,
-th.grade,
-td.grade {
+.ChallengesView th.shown-at,
+.ChallengesView td.shown-at,
+.ChallengesView th.grade,
+.ChallengesView td.grade {
   border-left: 1px gray solid;
 }
 
-tr.first-for-card-id {
+.ChallengesView tr.first-for-card-id {
   border-top: 1px gray solid;
 }

@@ -1,6 +1,6 @@
-.darken-on-hover:hover {
+.CardView .darken-on-hover:hover {
   background-color: #ccc;
 }
-.highlighted {
+.CardView .highlighted {
   background-color: #ccc;
 }

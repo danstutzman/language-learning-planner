@@ -114,7 +114,7 @@ export default class Given2Type1 extends React.PureComponent<Props, State> {
     const { challenge } = this.props
     const { l2 } = challenge.card
 
-    return <div>
+    return <div className='Given2Type1'>
       <button>Show L2</button>
 
       {false && <h1>{l2}</h1>}

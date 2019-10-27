@@ -29,7 +29,7 @@ export default class CardsView extends React.PureComponent<Props> {
     const { cardList } = this.props
     const cards = cardList ? cardList.cards : []
 
-    return <div>
+    return <div className='CardsView'>
       <h2>Cards</h2>
 
       <table>
