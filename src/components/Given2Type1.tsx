@@ -5,7 +5,8 @@ import * as React from 'react'
 
 interface Props {
   challenge: Challenge
-  updateChallenge: (update: ChallengeUpdate) => Promise<void>,
+  speakL2: (l2: string) => void
+  updateChallengeAndAdvance: (update: ChallengeUpdate) => void
 }
 
 interface State {
@@ -40,6 +41,12 @@ export default class Given2Type1 extends React.PureComponent<Props, State> {
     }
 
     this.speakL2()
+  }
+
+  componentDidUpdate(prevProps: Props, prevState: State) {
+    if(this.props.challenge.id !== prevProps.challenge.id) {
+      this.speakL2()
+    }
   }
 
   componentWillUnmount() {
@@ -77,8 +84,9 @@ export default class Given2Type1 extends React.PureComponent<Props, State> {
       const { answeredL1, showMnemonic, shownAt,
         firstKeyMillis, lastKeyMillis } = this.state
 
-      this.props.updateChallenge({
+      this.props.updateChallengeAndAdvance({
         id:             challenge.id,
+        cardId:         challenge.cardId,
         answeredL1:     answeredL1,
         showedMnemonic: showMnemonic,
         grade:          this.gradeAnswer(),
@@ -91,23 +99,7 @@ export default class Given2Type1 extends React.PureComponent<Props, State> {
 
   speakL2 = () => {
     const l2 = this.props.challenge.card.l2
-    const utterance = new SpeechSynthesisUtterance(l2)
-
-    for (const voice of window.speechSynthesis.getVoices()) {
-      if (voice.lang.startsWith('es')) {
-        utterance.voice = voice
-        break
-      }
-    }
-
-    const voiceName = 'Angelica'
-    for (const voice of window.speechSynthesis.getVoices()) {
-      if (voice.name === voiceName) {
-        utterance.voice = voice
-      }
-    }
-
-    window.speechSynthesis.speak(utterance)
+    this.props.speakL2(l2)
   }
 
   render() {

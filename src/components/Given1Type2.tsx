@@ -73,6 +73,7 @@ export default class Given1Type2 extends React.PureComponent<Props, State> {
 
       this.props.updateChallenge({
         id:             challenge.id,
+        cardId:         challenge.cardId,
         answeredL2:     answeredL2,
         showedMnemonic: showMnemonic,
         grade:          this.gradeAnswer(),

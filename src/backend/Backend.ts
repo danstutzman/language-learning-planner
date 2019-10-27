@@ -56,6 +56,7 @@ export interface Challenge {
 
 export interface ChallengeUpdate {
   id: number,
+  cardId: number,
   answeredL1?: string,
   answeredL2?: string,
   grade?: string,
@@ -81,7 +82,7 @@ export interface BackendProps {
   createMorpheme: (morpheme: Morpheme) => Promise<Morpheme>,
   deleteCard: (id: number) => Promise<void>,
   deleteMorpheme: (id: number) => Promise<void>,
-  getTopChallenge: (type: string) => Promise<Challenge>,
+  getTopChallenges: (type: string) => Promise<ChallengeList>,
   guessMorphemes: (l2Prefix: string) => Promise<MorphemeList>
   listChallenges: () => Promise<ChallengeList>
   listCards: () => Promise<CardList>
@@ -128,7 +129,7 @@ export default class Backend {
       createMorpheme: this.createMorpheme,
       deleteCard: this.deleteCard,
       deleteMorpheme: this.deleteMorpheme,
-      getTopChallenge: this.getTopChallenge,
+      getTopChallenges: this.getTopChallenges,
       guessMorphemes: this.guessMorphemes,
       listCards: this.listCards,
       listChallenges: this.listChallenges,
@@ -287,14 +288,13 @@ export default class Backend {
     sendQuery('GET', `${this.baseUrl}/morphemes` +
       `?l2_phrase=${encodeURIComponent(l2Phrase)}`, null)
 
-  getTopChallenge = (type: string): Promise<Challenge> =>
+  getTopChallenges = (type: string): Promise<ChallengeList> =>
     sendQuery('GET', `${this.baseUrl}/challenges/top?` +
       `type=${type}`, null)
 
   updateChallenge = (update: ChallengeUpdate): Promise<void> =>
     sendQuery('PATCH',
       `${this.baseUrl}/challenges/${update.id}`, update)
-      .then(this.refresh)
 
   listChallenges = (): Promise<ChallengeList> =>
     sendQuery('GET', `${this.baseUrl}/challenges`, null)

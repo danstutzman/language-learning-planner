@@ -9,8 +9,7 @@ import {ChallengeList} from '../backend/Backend'
 import ChallengesView from './ChallengesView'
 import {EMPTY_CARD} from '../backend/Backend'
 import {EMPTY_MORPHEME} from '../backend/Backend'
-import Given1Type2 from './Given1Type2'
-import Given2Type1 from './Given2Type1'
+import Given2Type1Summary from './Given2Type1Summary'
 import {HashRouter} from 'react-router-dom'
 import {Link} from 'react-router-dom'
 import {Morpheme} from '../backend/Backend'
@@ -25,6 +24,8 @@ import usePromise from 'react-promise'
 
 interface Props {
   backend: BackendProps,
+  initSynthesizer: () => Promise<void>,
+  speakL2: (l2: string) => void,
 }
 
 export default class App extends React.PureComponent<Props> {
@@ -84,27 +85,17 @@ export default class App extends React.PureComponent<Props> {
     })
   }
 
-  renderGiven1Type2 = (args: any) => {
-    const promise = this.props.backend.getTopChallenge('Given1Type2')
+  renderGiven2Type1Summary = (args: any) => {
+    const promise = this.props.backend.getTopChallenges('Given2Type1')
     return React.createElement(() => {
-      const resolved = usePromise<Challenge>(promise)
+      const resolved = usePromise<ChallengeList>(promise)
       if (resolved.error) { return <div>Error {resolved.error.message}</div> }
-      if (!resolved.value) { return <div>Loading...</div> }
-      return <Given1Type2
-        challenge={resolved.value}
-        updateChallenge={this.props.backend.updateChallenge} />
-    })
-  }
-
-  renderGiven2Type1 = (args: any) => {
-    const promise = this.props.backend.getTopChallenge('Given2Type1')
-    return React.createElement(() => {
-      const resolved = usePromise<Challenge>(promise)
-      if (resolved.error) { return <div>Error {resolved.error.message}</div> }
-      if (!resolved.value) { return <div>Loading...</div> }
-      return <Given2Type1
+      if (!resolved.value) { return <div>Loading card...</div> }
+      return <Given2Type1Summary
+        initSynthesizer={this.props.initSynthesizer}
         updateChallenge={this.props.backend.updateChallenge}
-        challenge={resolved.value} />
+        challengeList={resolved.value}
+        speakL2={this.props.speakL2} />
     })
   }
 
@@ -167,8 +158,6 @@ export default class App extends React.PureComponent<Props> {
         {' - '}
         <Link to="/challenges">Challenges</Link>
         {' - '}
-        <Link to="/given1type2">Given1Type2</Link>
-        {' - '}
         <Link to="/given2type1">Given2Type1</Link>
         {' - '}
         <Link to="/morphemes">Morphemes</Link>
@@ -179,8 +168,7 @@ export default class App extends React.PureComponent<Props> {
         <Route path="/cards" exact render={this.renderCardsView} />
         <Route path="/cards/:id" render={this.renderCardView} />
         <Route path="/challenges" exact render={this.renderChallengesView} />
-        <Route path="/given1type2" render={this.renderGiven1Type2} />
-        <Route path="/given2type1" render={this.renderGiven2Type1} />
+        <Route path="/given2type1" render={this.renderGiven2Type1Summary} />
         <Route path="/morphemes" exact render={this.renderMorphemesView} />
         <Route path="/morphemes/:id" render={this.renderMorphemeView} />
         <Route path="/skills" exact render={this.renderSkillsView} />

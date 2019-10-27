@@ -27,6 +27,7 @@ export default class ChallengesView extends React.PureComponent<Props> {
     if (!Number.isNaN(misconnectedCardId)) {
       this.props.updateChallenge({
         id: challenge.id,
+        cardId: challenge.cardId,
         grade,
         misconnectedCardId,
       })
@@ -37,14 +38,22 @@ export default class ChallengesView extends React.PureComponent<Props> {
     const challenge = this.findChallengeByDataId(e)
     const grade = challenge.showedMnemonic ?
       'RIGHT_WITH_MNEMONIC' : 'RIGHT_WITHOUT_MNEMONIC'
-    this.props.updateChallenge({ id: challenge.id, grade })
+    this.props.updateChallenge({
+      id: challenge.id,
+      cardId: challenge.cardId,
+      grade,
+    })
   }
 
   onClickWrong = (e: any) => {
     const challenge = this.findChallengeByDataId(e)
     const grade = challenge.showedMnemonic ?
       'WRONG_WITH_MNEMONIC' : 'WRONG_WITHOUT_MNEMONIC'
-    this.props.updateChallenge({ id: challenge.id, grade })
+    this.props.updateChallenge({
+      id: challenge.id,
+      cardId: challenge.cardId,
+      grade,
+    })
   }
 
   renderGradeFields(challenge: Challenge) {
