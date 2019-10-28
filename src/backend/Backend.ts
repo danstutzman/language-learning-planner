@@ -36,33 +36,34 @@ export const EMPTY_MORPHEME_LIST: MorphemeList = {
 }
 
 export interface Answer {
-  id?: number,
-  type: string,
-  cardId: number,
-  card?: Card,
+  id?: number
+  type: string
+  cardId: number
+  card?: Card
+  morphemes?: Array<AnsweredMorpheme>
 
-  shownAt: Date,
-  answeredL1: string | null,
-  answeredL2: string | null,
-  showedMnemonic: boolean,
-  firstKeyMillis: number,
-  lastKeyMillis: number,
+  shownAt: Date
+  answeredL1: string | null
+  answeredL2: string | null
+  showedMnemonic: boolean
+  firstKeyMillis: number
+  lastKeyMillis: number
 
-  grade: string,
-  misconnectedCardId: number | null,
+  grade: string
+  misconnectedCardId: number | null
 }
 
 export interface AnswerUpdate {
-  id: number,
-  cardId: number,
-  answeredL1?: string,
-  answeredL2?: string,
-  grade?: string,
-  showedMnemonic?: boolean,
-  shownAt?: Date,
-  firstKeyMillis?: number,
-  lastKeyMillis?: number,
-  misconnectedCardId?: number,
+  id: number
+  cardId: number
+  answeredL1?: string
+  answeredL2?: string
+  grade?: string
+  showedMnemonic?: boolean
+  shownAt?: Date
+  firstKeyMillis?: number
+  lastKeyMillis?: number
+  misconnectedCardId?: number
 }
 
 export interface Skill {
