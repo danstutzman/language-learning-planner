@@ -46,6 +46,13 @@ export default class Given2Type2 extends React.PureComponent<Props, State> {
   componentDidUpdate(prevProps: Props, prevState: State) {
     if(this.props.card.id !== prevProps.card.id) {
       this.speakL2()
+      this.setState({
+        answeredL2: '',
+        showMnemonic: false,
+        shownAt: new Date(),
+        firstKeyMillis: null,
+        lastKeyMillis: null,
+      })
     }
   }
 
