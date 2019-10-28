@@ -1,6 +1,7 @@
 import {Answer} from '../backend/Backend'
 import {AnswerList} from '../backend/Backend'
 import {AnswerUpdate} from '../backend/Backend'
+import {AnsweredMorpheme} from '../backend/Backend'
 import './AnswersView.css'
 import * as React from 'react'
 
@@ -73,6 +74,19 @@ export default class AnswersView extends React.PureComponent<Props> {
     }
   }
 
+  renderMorphemes = (morphemes: Array<AnsweredMorpheme>) =>
+    <table>
+      <tr>
+        {morphemes.map((morpheme, i) =>
+          <td key={i}>{morpheme.l2}</td>)}
+      </tr>
+      <tr>
+        {morphemes.map((morpheme, i) =>
+          <td key={i} className={morpheme.answeredL2 === morpheme.l2 ?
+            'match' : 'nonmatch'}>{morpheme.answeredL2}</td>)}
+      </tr>
+    </table>
+
   renderAnswerRows = (answers: Array<Answer>) =>
     answers.map((answer: Answer, i: number) => {
       const className = (i === 0 ||
@@ -85,6 +99,7 @@ export default class AnswersView extends React.PureComponent<Props> {
         <td className='shown-at'>{answer.shownAt}</td>
         <td>{answer.answeredL1}</td>
         <td>{answer.answeredL2}</td>
+        <td>{this.renderMorphemes(answer.morphemes)}</td>
         <td className='grade'>{this.renderGradeFields(answer)}</td>
       </tr>
     })
@@ -93,7 +108,7 @@ export default class AnswersView extends React.PureComponent<Props> {
     const { answerList } = this.props
     const answers = answerList ? answerList.answers : []
 
-    return <div>
+    return <div className='AnswersView'>
       <h2>Answers</h2>
 
       <table>
@@ -105,6 +120,7 @@ export default class AnswersView extends React.PureComponent<Props> {
             <th className='shown-at'>Shown At</th>
             <th>Answered L1</th>
             <th>Answered L2</th>
+            <th>Morphemes</th>
             <th className='grade'>Grade</th>
           </tr>
         </thead>

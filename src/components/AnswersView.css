@@ -12,3 +12,11 @@
 .AnswersView tr.first-for-card-id {
   border-top: 1px gray solid;
 }
+
+.AnswersView td.match {
+  color: #080;
+}
+.AnswersView td.nonmatch {
+  color: #800;
+}
+

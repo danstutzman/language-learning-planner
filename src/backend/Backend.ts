@@ -35,6 +35,12 @@ export const EMPTY_MORPHEME_LIST: MorphemeList = {
   countWithoutLimit: 0,
 }
 
+export interface AnsweredMorpheme {
+  l2: string
+  begin: number
+  answeredL2: string
+}
+
 export interface Answer {
   id?: number
   type: string
