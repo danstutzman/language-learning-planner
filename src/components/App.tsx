@@ -1,15 +1,15 @@
+import {Answer} from '../backend/Backend'
+import AnswersView from './AnswersView'
+import {AnswerList} from '../backend/Backend'
 import Backend from '../backend/Backend'
 import {BackendProps} from '../backend/Backend'
 import {Card} from '../backend/Backend'
 import {CardList} from '../backend/Backend'
 import CardView from './CardView'
 import CardsView from './CardsView'
-import {Challenge} from '../backend/Backend'
-import {ChallengeList} from '../backend/Backend'
-import ChallengesView from './ChallengesView'
 import {EMPTY_CARD} from '../backend/Backend'
 import {EMPTY_MORPHEME} from '../backend/Backend'
-import Given2Type1Summary from './Given2Type1Summary'
+import Given2Type2Summary from './Given2Type2Summary'
 import {HashRouter} from 'react-router-dom'
 import {Link} from 'react-router-dom'
 import {Morpheme} from '../backend/Backend'
@@ -73,28 +73,28 @@ export default class App extends React.PureComponent<Props> {
     })
   }
 
-  renderChallengesView = (args: any) => {
-    const promise = this.props.backend.listChallenges()
+  renderAnswersView = (args: any) => {
+    const promise = this.props.backend.listAnswers()
     return React.createElement(() => {
-      const resolved = usePromise<ChallengeList>(promise)
+      const resolved = usePromise<AnswerList>(promise)
       if (resolved.error) { return <div>Error {resolved.error.message}</div> }
       if (!resolved.value) { return <div>Loading...</div> }
-      return <ChallengesView
-        challengeList={resolved.value}
-        updateChallenge={this.props.backend.updateChallenge} />
+      return <AnswersView
+        answerList={resolved.value}
+        updateAnswer={this.props.backend.updateAnswer} />
     })
   }
 
-  renderGiven2Type1Summary = (args: any) => {
-    const promise = this.props.backend.getTopChallenges('Given2Type1')
+  renderGiven2Type2Summary = (args: any) => {
+    const promise = this.props.backend.getTopCards('Given2Type2')
     return React.createElement(() => {
-      const resolved = usePromise<ChallengeList>(promise)
+      const resolved = usePromise<CardList>(promise)
       if (resolved.error) { return <div>Error {resolved.error.message}</div> }
       if (!resolved.value) { return <div>Loading card...</div> }
-      return <Given2Type1Summary
+      return <Given2Type2Summary
         initSynthesizer={this.props.initSynthesizer}
-        updateChallenge={this.props.backend.updateChallenge}
-        challengeList={resolved.value}
+        createAnswer={this.props.backend.createAnswer}
+        cardList={resolved.value}
         speakL2={this.props.speakL2} />
     })
   }
@@ -154,21 +154,21 @@ export default class App extends React.PureComponent<Props> {
   render() {
     return <HashRouter>
       <div className="App">
+        <Link to="/answers">Answers</Link>
+        {' - '}
         <Link to="/cards">Cards</Link>
         {' - '}
-        <Link to="/challenges">Challenges</Link>
-        {' - '}
-        <Link to="/given2type1">Given2Type1</Link>
+        <Link to="/given2type2">Given2Type2</Link>
         {' - '}
         <Link to="/morphemes">Morphemes</Link>
         {' - '}
         <Link to="/skills">Skills</Link>
         <br/>
 
+        <Route path="/answers" exact render={this.renderAnswersView} />
         <Route path="/cards" exact render={this.renderCardsView} />
         <Route path="/cards/:id" render={this.renderCardView} />
-        <Route path="/challenges" exact render={this.renderChallengesView} />
-        <Route path="/given2type1" render={this.renderGiven2Type1Summary} />
+        <Route path="/given2type2" render={this.renderGiven2Type2Summary} />
         <Route path="/morphemes" exact render={this.renderMorphemesView} />
         <Route path="/morphemes/:id" render={this.renderMorphemeView} />
         <Route path="/skills" exact render={this.renderSkillsView} />

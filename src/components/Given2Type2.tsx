@@ -1,30 +1,30 @@
-import {Challenge} from '../backend/Backend'
-import {ChallengeUpdate} from '../backend/Backend'
-import './Given2Type1.css'
+import {Answer} from '../backend/Backend'
+import {Card} from '../backend/Backend'
+import './Given2Type2.css'
 import * as React from 'react'
 
 interface Props {
-  challenge: Challenge
+  card: Card
   speakL2: (l2: string) => void
-  updateChallengeAndAdvance: (update: ChallengeUpdate) => void
+  createAnswerAndAdvance: (answer: Answer) => void
 }
 
 interface State {
-  answeredL1: string
+  answeredL2: string
   showMnemonic: boolean
   shownAt: Date
   firstKeyMillis: number | null
   lastKeyMillis: number | null
 }
 
-export default class Given2Type1 extends React.PureComponent<Props, State> {
-  answeredL1Element: any
+export default class Given2Type2 extends React.PureComponent<Props, State> {
+  answeredL2Element: any
   timeoutToShowMnemonic: any
 
   constructor(props: Props) {
     super(props)
     this.state = {
-      answeredL1: '',
+      answeredL2: '',
       showMnemonic: false,
       shownAt: new Date(),
       firstKeyMillis: null,
@@ -33,9 +33,9 @@ export default class Given2Type1 extends React.PureComponent<Props, State> {
   }
 
   componentDidMount() {
-    this.answeredL1Element.focus()
+    this.answeredL2Element.focus()
     
-    if (this.props.challenge.card.mnemonic21) {
+    if (this.props.card.mnemonic21) {
       this.timeoutToShowMnemonic = setTimeout(
         () => this.setState({ showMnemonic: true }), 2000)
     }
@@ -44,7 +44,7 @@ export default class Given2Type1 extends React.PureComponent<Props, State> {
   }
 
   componentDidUpdate(prevProps: Props, prevState: State) {
-    if(this.props.challenge.id !== prevProps.challenge.id) {
+    if(this.props.card.id !== prevProps.card.id) {
       this.speakL2()
     }
   }
@@ -53,11 +53,11 @@ export default class Given2Type1 extends React.PureComponent<Props, State> {
     clearTimeout(this.timeoutToShowMnemonic)
   }
 
-  onChangeAnsweredL1 = (e: any) => {
-    const answeredL1 = e.target.value as string
+  onChangeAnsweredL2 = (e: any) => {
+    const answeredL2 = e.target.value as string
 
     this.setState(prev => ({
-      answeredL1,
+      answeredL2,
       firstKeyMillis: prev.firstKeyMillis ||
         (new Date().getTime() - prev.shownAt.getTime()),
       lastKeyMillis: new Date().getTime() - prev.shownAt.getTime(),
@@ -67,46 +67,48 @@ export default class Given2Type1 extends React.PureComponent<Props, State> {
   }
 
   gradeAnswer = (): string => {
-    const { challenge } = this.props
-    const { answeredL1, showMnemonic } = this.state
-    if (answeredL1 === '') {
+    const { card } = this.props
+    const { answeredL2, showMnemonic } = this.state
+    if (answeredL2 === '') {
       return 'BLANK'
-    } else if (answeredL1.toLowerCase() === challenge.card.l1.toLowerCase()) {
+    } else if (answeredL2.toLowerCase() === card.l1.toLowerCase()) {
       return showMnemonic ? 'RIGHT_WITH_MNEMONIC' : 'RIGHT_WITHOUT_MNEMONIC'
     } else {
       return null
     }
   }
 
-  onKeyDownAnsweredL1 = (e: any) => {
+  onKeyDownAnsweredL2 = (e: any) => {
     if (e.key === 'Enter') {
-      const { challenge } = this.props
-      const { answeredL1, showMnemonic, shownAt,
+      const { card } = this.props
+      const { answeredL2, showMnemonic, shownAt,
         firstKeyMillis, lastKeyMillis } = this.state
 
-      this.props.updateChallengeAndAdvance({
-        id:             challenge.id,
-        cardId:         challenge.cardId,
-        answeredL1:     answeredL1,
+      this.props.createAnswerAndAdvance({
+        cardId:         card.id,
+        type:           'Given2Type2',
+        answeredL1:     null,
+        answeredL2:     answeredL2,
         showedMnemonic: showMnemonic,
         grade:          this.gradeAnswer(),
         shownAt,
         firstKeyMillis,
         lastKeyMillis,
+        misconnectedCardId: null,
       })
     }
   }
 
   speakL2 = () => {
-    const l2 = this.props.challenge.card.l2
+    const l2 = this.props.card.l2
     this.props.speakL2(l2)
   }
 
   render() {
-    const { challenge } = this.props
-    const { l2 } = challenge.card
+    const { card } = this.props
+    const { l2 } = card
 
-    return <div className='Given2Type1'>
+    return <div className='Given2Type2'>
       <button>Show L2</button>
 
       {false && <h1>{l2}</h1>}
@@ -114,13 +116,13 @@ export default class Given2Type1 extends React.PureComponent<Props, State> {
       <button onClick={this.speakL2}>Speak L2</button>
 
       {this.state.showMnemonic &&
-        <h2>{challenge.card.mnemonic21}</h2>}
+        <h2>{card.mnemonic21}</h2>}
       <input 
         type='text' 
-        ref={e => this.answeredL1Element = e}
-        value={this.state.answeredL1} 
-        onChange={this.onChangeAnsweredL1}
-        onKeyDown={this.onKeyDownAnsweredL1}
+        ref={e => this.answeredL2Element = e}
+        value={this.state.answeredL2} 
+        onChange={this.onChangeAnsweredL2}
+        onKeyDown={this.onKeyDownAnsweredL2}
         autoFocus />
     </div>
   }

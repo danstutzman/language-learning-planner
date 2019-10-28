@@ -1,0 +1,14 @@
+.AnswersView table {
+  border-collapse: collapse;
+}
+
+.AnswersView th.shown-at,
+.AnswersView td.shown-at,
+.AnswersView th.grade,
+.AnswersView td.grade {
+  border-left: 1px gray solid;
+}
+
+.AnswersView tr.first-for-card-id {
+  border-top: 1px gray solid;
+}

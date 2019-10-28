@@ -35,26 +35,24 @@ export const EMPTY_MORPHEME_LIST: MorphemeList = {
   countWithoutLimit: 0,
 }
 
-export interface Challenge {
-  id: number,
+export interface Answer {
+  id?: number,
   type: string,
   cardId: number,
-  card: Card,
+  card?: Card,
 
-  expectation: string,
-
-  shownAt: Date | null,
+  shownAt: Date,
   answeredL1: string | null,
   answeredL2: string | null,
   showedMnemonic: boolean,
-  firstKeyMillis: number | null,
-  lastKeyMillis: number | null,
+  firstKeyMillis: number,
+  lastKeyMillis: number,
 
   grade: string,
   misconnectedCardId: number | null,
 }
 
-export interface ChallengeUpdate {
+export interface AnswerUpdate {
   id: number,
   cardId: number,
   answeredL1?: string,
@@ -78,26 +76,27 @@ export interface SkillList {
 }
 
 export interface BackendProps {
-  createCard: (card: Card) => Promise<Card>,
-  createMorpheme: (morpheme: Morpheme) => Promise<Morpheme>,
-  deleteCard: (id: number) => Promise<void>,
-  deleteMorpheme: (id: number) => Promise<void>,
-  getTopChallenges: (type: string) => Promise<ChallengeList>,
+  createAnswer: (answer: Answer) => Promise<Answer>
+  createCard: (card: Card) => Promise<Card>
+  createMorpheme: (morpheme: Morpheme) => Promise<Morpheme>
+  deleteCard: (id: number) => Promise<void>
+  deleteMorpheme: (id: number) => Promise<void>
+  getTopCards: (type: string) => Promise<CardList>
   guessMorphemes: (l2Prefix: string) => Promise<MorphemeList>
-  listChallenges: () => Promise<ChallengeList>
+  listAnswers: () => Promise<AnswerList>
   listCards: () => Promise<CardList>
   listMorphemes: () => Promise<MorphemeList>
   listSkills: () => Promise<SkillList>
   parseL2Phrase: (l2Phrase: string) => Promise<MorphemeList>
   showCard: (id: number) => Promise<Card>
   showMorpheme: (id: number) => Promise<Morpheme>
+  updateAnswer: (update: AnswerUpdate) => Promise<void>,
   updateCard: (card: Card) => Promise<Card>,
-  updateChallenge: (challenge: Challenge) => Promise<void>,
   updateMorpheme: (morpheme: Morpheme) => Promise<Morpheme>
 }
 
-export interface ChallengeList {
-  challenges: Array<Challenge>
+export interface AnswerList {
+  answers: Array<Answer>
 }
 
 export interface CardList {
@@ -125,21 +124,22 @@ export default class Backend {
     this.listCardsCache = {}
     this.listMorphemesCache = {}
     this.props = {
+      createAnswer: this.createAnswer,
       createCard: this.createCard,
       createMorpheme: this.createMorpheme,
       deleteCard: this.deleteCard,
       deleteMorpheme: this.deleteMorpheme,
-      getTopChallenges: this.getTopChallenges,
+      getTopCards: this.getTopCards,
       guessMorphemes: this.guessMorphemes,
       listCards: this.listCards,
-      listChallenges: this.listChallenges,
+      listAnswers: this.listAnswers,
       listMorphemes: this.listMorphemes,
       listSkills: this.listSkills,
       parseL2Phrase: this.parseL2Phrase,
       showCard: this.showCard,
       showMorpheme: this.showMorpheme,
+      updateAnswer: this.updateAnswer,
       updateCard: this.updateCard,
-      updateChallenge: this.updateChallenge,
       updateMorpheme: this.updateMorpheme,
     }
     this.showCardCache = {}
@@ -288,14 +288,17 @@ export default class Backend {
     sendQuery('GET', `${this.baseUrl}/morphemes` +
       `?l2_phrase=${encodeURIComponent(l2Phrase)}`, null)
 
-  getTopChallenges = (type: string): Promise<ChallengeList> =>
-    sendQuery('GET', `${this.baseUrl}/challenges/top?` +
+  getTopCards = (type: string): Promise<CardList> =>
+    sendQuery('GET', `${this.baseUrl}/cards/top?` +
       `type=${type}`, null)
 
-  updateChallenge = (update: ChallengeUpdate): Promise<void> =>
+  updateAnswer = (update: AnswerUpdate): Promise<void> =>
     sendQuery('PATCH',
-      `${this.baseUrl}/challenges/${update.id}`, update)
+      `${this.baseUrl}/answers/${update.id}`, update)
 
-  listChallenges = (): Promise<ChallengeList> =>
-    sendQuery('GET', `${this.baseUrl}/challenges`, null)
+  listAnswers = (): Promise<AnswerList> =>
+    sendQuery('GET', `${this.baseUrl}/answers`, null)
+    
+  createAnswer = (answer: Answer): Promise<Answer> =>
+    sendQuery('POST', `${this.baseUrl}/answers`, answer)
 }
