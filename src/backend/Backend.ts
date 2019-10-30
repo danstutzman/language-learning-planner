@@ -35,10 +35,9 @@ export const EMPTY_MORPHEME_LIST: MorphemeList = {
   countWithoutLimit: 0,
 }
 
-export interface AnsweredMorpheme {
-  l2: string
-  begin: number
-  answeredL2: string
+export interface AnswerMorpheme {
+  correctL2: string
+  alignedL2: string
 }
 
 export interface Answer {
@@ -46,7 +45,7 @@ export interface Answer {
   type: string
   cardId: number
   card?: Card
-  morphemes?: Array<AnsweredMorpheme>
+  morphemes?: Array<AnswerMorpheme>
 
   shownAt: Date
   answeredL1: string | null

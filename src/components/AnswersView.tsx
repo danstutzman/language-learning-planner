@@ -1,7 +1,7 @@
 import {Answer} from '../backend/Backend'
 import {AnswerList} from '../backend/Backend'
 import {AnswerUpdate} from '../backend/Backend'
-import {AnsweredMorpheme} from '../backend/Backend'
+import {AnswerMorpheme} from '../backend/Backend'
 import './AnswersView.css'
 import * as React from 'react'
 
@@ -74,17 +74,22 @@ export default class AnswersView extends React.PureComponent<Props> {
     }
   }
 
-  renderMorphemes = (morphemes: Array<AnsweredMorpheme>) =>
+  renderMorphemes = (morphemes: Array<AnswerMorpheme>) =>
     <table>
-      <tr>
-        {morphemes.map((morpheme, i) =>
-          <td key={i}>{morpheme.l2}</td>)}
-      </tr>
-      <tr>
-        {morphemes.map((morpheme, i) =>
-          <td key={i} className={morpheme.answeredL2 === morpheme.l2 ?
-            'match' : 'nonmatch'}>{morpheme.answeredL2}</td>)}
-      </tr>
+      <tbody>
+        <tr>
+          {morphemes.map((morpheme, i) =>
+            <td key={i}>{morpheme.correctL2}</td>)}
+        </tr>
+        <tr>
+          {morphemes.map((morpheme, i) =>
+            <td key={i}
+              className={morpheme.alignedL2 === morpheme.correctL2 ?
+              'match' : 'nonmatch'}>
+              {morpheme.alignedL2}
+            </td>)}
+        </tr>
+      </tbody>
     </table>
 
   renderAnswerRows = (answers: Array<Answer>) =>
