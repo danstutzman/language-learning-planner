@@ -19,61 +19,6 @@ export default class AnswersView extends React.PureComponent<Props> {
     return answer
   }
 
-  onClickMisconnected = (e: any) => {
-    const answer = this.findAnswerByDataId(e)
-    const grade = answer.showedMnemonic ?
-      'MISCONNECTED_WITH_MNEMONIC' : 'MISCONNECTED_WITHOUT_MNEMONIC'
-    const misconnectedCardId = parseInt(window.prompt(
-      'Enter ID for card that was wrongly connected'), 10)
-    if (!Number.isNaN(misconnectedCardId)) {
-      this.props.updateAnswer({
-        id: answer.id,
-        cardId: answer.cardId,
-        grade,
-        misconnectedCardId,
-      })
-    }
-  }
-
-  onClickRight = (e: any) => {
-    const answer = this.findAnswerByDataId(e)
-    const grade = answer.showedMnemonic ?
-      'RIGHT_WITH_MNEMONIC' : 'RIGHT_WITHOUT_MNEMONIC'
-    this.props.updateAnswer({
-      id: answer.id,
-      cardId: answer.cardId,
-      grade,
-    })
-  }
-
-  onClickWrong = (e: any) => {
-    const answer = this.findAnswerByDataId(e)
-    const grade = answer.showedMnemonic ?
-      'WRONG_WITH_MNEMONIC' : 'WRONG_WITHOUT_MNEMONIC'
-    this.props.updateAnswer({
-      id: answer.id,
-      cardId: answer.cardId,
-      grade,
-    })
-  }
-
-  renderGradeFields(answer: Answer) {
-    if (answer.grade) {
-      return answer.grade
-    } else if (answer.shownAt) {
-      return <div>
-        <button data-id={answer.id}
-          onClick={this.onClickRight}>Right</button>
-        <button data-id={answer.id}
-          onClick={this.onClickMisconnected}>Misconnected</button>
-      </div>
-    } else if (answer.showedMnemonic !== null) {
-      return answer.showedMnemonic ?
-        <div>showed mnemonic :-(</div> :
-        <div>quick answer :-)</div>
-    }
-  }
-
   renderMorphemes = (morphemes: Array<AnswerMorpheme>) =>
     <table>
       <tbody>
@@ -105,7 +50,6 @@ export default class AnswersView extends React.PureComponent<Props> {
         <td>{answer.answeredL1}</td>
         <td>{answer.answeredL2}</td>
         <td>{this.renderMorphemes(answer.morphemes)}</td>
-        <td className='grade'>{this.renderGradeFields(answer)}</td>
       </tr>
     })
 
@@ -126,7 +70,6 @@ export default class AnswersView extends React.PureComponent<Props> {
             <th>Answered L1</th>
             <th>Answered L2</th>
             <th>Morphemes</th>
-            <th className='grade'>Grade</th>
           </tr>
         </thead>
         <tbody>

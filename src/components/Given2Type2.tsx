@@ -73,18 +73,6 @@ export default class Given2Type2 extends React.PureComponent<Props, State> {
     clearTimeout(this.timeoutToShowMnemonic)
   }
 
-  gradeAnswer = (): string => {
-    const { card } = this.props
-    const { answeredL2, showMnemonic } = this.state
-    if (answeredL2 === '') {
-      return 'BLANK'
-    } else if (answeredL2.toLowerCase() === card.l1.toLowerCase()) {
-      return showMnemonic ? 'RIGHT_WITH_MNEMONIC' : 'RIGHT_WITHOUT_MNEMONIC'
-    } else {
-      return null
-    }
-  }
-
   onKeyDownAnsweredL2 = (e: any) => {
     if (e.key === 'Enter') {
       const { card } = this.props
@@ -97,11 +85,9 @@ export default class Given2Type2 extends React.PureComponent<Props, State> {
         answeredL1:     null,
         answeredL2:     answeredL2,
         showedMnemonic: showMnemonic,
-        grade:          this.gradeAnswer(),
         shownAt,
         firstKeyMillis,
         lastKeyMillis,
-        misconnectedCardId: null,
       })
     }
   }

@@ -53,9 +53,6 @@ export interface Answer {
   showedMnemonic: boolean
   firstKeyMillis: number
   lastKeyMillis: number
-
-  grade: string
-  misconnectedCardId: number | null
 }
 
 export interface AnswerUpdate {
@@ -63,12 +60,10 @@ export interface AnswerUpdate {
   cardId: number
   answeredL1?: string
   answeredL2?: string
-  grade?: string
   showedMnemonic?: boolean
   shownAt?: Date
   firstKeyMillis?: number
   lastKeyMillis?: number
-  misconnectedCardId?: number
 }
 
 export interface BackendProps {
