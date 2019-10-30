@@ -1,11 +1,10 @@
 import {Answer} from '../backend/Backend'
 import {Card} from '../backend/Backend'
-import './Given2Type2.css'
+import './Given1Type2.css'
 import * as React from 'react'
 
 interface Props {
   card: Card
-  speakL2: (l2: string) => void
   createAnswerAndAdvance: (answer: Answer) => void
 }
 
@@ -17,7 +16,7 @@ interface State {
   lastKeyMillis: number | null
 }
 
-export default class Given2Type2 extends React.PureComponent<Props, State> {
+export default class Given1Type2 extends React.PureComponent<Props, State> {
   answeredL2Element: any
   timeoutToShowMnemonic: any
 
@@ -39,13 +38,10 @@ export default class Given2Type2 extends React.PureComponent<Props, State> {
       this.timeoutToShowMnemonic = setTimeout(
         () => this.setState({ showMnemonic: true }), 2000)
     }
-
-    this.speakL2()
   }
 
   componentDidUpdate(prevProps: Props, prevState: State) {
     if(this.props.card.id !== prevProps.card.id) {
-      this.speakL2()
       this.setState({
         answeredL2: '',
         showMnemonic: false,
@@ -93,7 +89,7 @@ export default class Given2Type2 extends React.PureComponent<Props, State> {
 
       this.props.createAnswerAndAdvance({
         cardId:         card.id,
-        type:           'Given2Type2',
+        type:           'Given1Type2',
         answeredL1:     null,
         answeredL2:     answeredL2,
         showedMnemonic: showMnemonic,
@@ -106,17 +102,12 @@ export default class Given2Type2 extends React.PureComponent<Props, State> {
     }
   }
 
-  speakL2 = () => {
-    const l2 = this.props.card.l2
-    this.props.speakL2(l2)
-  }
-
   render() {
     const { card } = this.props
-    const { l2 } = card
+    const { l1 } = card
 
-    return <div className='Given2Type2'>
-      <button onClick={this.speakL2}>Speak L2</button>
+    return <div className='Given1Type2'>
+      <h1>{l1}</h1>
 
       {this.state.showMnemonic &&
         <h2>{card.mnemonic21}</h2>}
