@@ -23,8 +23,7 @@ reject: (e: Error) => void) {
 
 export default function speakL2(card: Card) {
   if (SPEAK_NONSENSE) {
-    const combined = card.morphemes.map(m => m.nonsense).join(' ')
-    console.log('Nonsense:', combined)
+    const combined = card.morphemes.map(m => m.nonsensePhones).join(' ')
     const utterance =
       new SpeechSynthesisUtterance('[[inpt PHON]]' + combined)
     window.speechSynthesis.speak(utterance)
