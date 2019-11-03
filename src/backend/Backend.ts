@@ -6,11 +6,13 @@ export interface Morpheme {
   id?: number
   type: string
   l2: string
+  nonsense: string
 }
 
 export const EMPTY_MORPHEME: Morpheme = {
   type: '',
   l2: '',
+  nonsense: '',
 }
 
 export interface Card {

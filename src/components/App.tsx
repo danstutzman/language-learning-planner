@@ -24,7 +24,7 @@ import usePromise from 'react-promise'
 interface Props {
   backend: BackendProps,
   initSynthesizer: () => Promise<void>,
-  speakL2: (l2: string) => void,
+  speakL2: (card: Card) => void,
 }
 
 export default class App extends React.PureComponent<Props> {

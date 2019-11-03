@@ -1,4 +1,5 @@
 import {Answer} from '../backend/Backend'
+import {Card} from '../backend/Backend'
 import {CardList} from '../backend/Backend'
 import Given2Type2 from './Given2Type2'
 import './Given2Type2Summary.css'
@@ -7,7 +8,7 @@ import * as React from 'react'
 interface Props {
   cardList: CardList
   initSynthesizer: () => Promise<void>,
-  speakL2: (l2: string) => void,
+  speakL2: (card: Card) => void,
   createAnswer: (answer: Answer) => Promise<Answer>,
 }
 

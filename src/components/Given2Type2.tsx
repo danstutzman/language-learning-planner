@@ -5,7 +5,7 @@ import * as React from 'react'
 
 interface Props {
   card: Card
-  speakL2: (l2: string) => void
+  speakL2: (card: Card) => void
   createAnswerAndAdvance: (answer: Answer) => void
 }
 
@@ -92,10 +92,8 @@ export default class Given2Type2 extends React.PureComponent<Props, State> {
     }
   }
 
-  speakL2 = () => {
-    const l2 = this.props.card.l2
-    this.props.speakL2(l2)
-  }
+  speakL2 = () =>
+    this.props.speakL2(this.props.card)
 
   render() {
     const { card } = this.props

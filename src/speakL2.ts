@@ -1,3 +1,7 @@
+import {Card} from './backend/Backend'
+
+const SPEAK_NONSENSE = true
+
 export function initSynthesizer(numRetry?: number): Promise<void> {
   return new Promise((resolve, reject) => {
     pollVoices(0, resolve, reject)
@@ -17,16 +21,26 @@ reject: (e: Error) => void) {
   }
 }
 
-export default function speakL2(l2: string) {
-  const utterance = new SpeechSynthesisUtterance(l2)
+export default function speakL2(card: Card) {
+  if (SPEAK_NONSENSE) {
+    const combined = card.morphemes.map(m => m.nonsense).join(' ')
+    console.log('Nonsense:', combined)
+    const utterance =
+      new SpeechSynthesisUtterance('[[inpt PHON]]' + combined)
+    window.speechSynthesis.speak(utterance)
+  } else {
+    const l2 = card.l2
 
-  const voices = window.speechSynthesis.getVoices()
-  for (const voice of voices) {
-    if (voice.lang.startsWith('es')) {
-      utterance.voice = voice
-      break
+    const utterance = new SpeechSynthesisUtterance(l2)
+
+    const voices = window.speechSynthesis.getVoices()
+    for (const voice of voices) {
+      if (voice.lang.startsWith('es')) {
+        utterance.voice = voice
+        break
+      }
     }
-  }
 
-  window.speechSynthesis.speak(utterance)
+    window.speechSynthesis.speak(utterance)
+  }
 }
