@@ -60,7 +60,9 @@ export default class CardsView extends React.PureComponent<Props> {
         </tbody>
       </table>
 
-      <button onClick={this.onClickNewCard}>New Card</button>
+      <button
+        className='new-card'
+        onClick={this.onClickNewCard}>New Card</button>
     </div>
   }
 }

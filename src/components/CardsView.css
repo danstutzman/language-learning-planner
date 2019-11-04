@@ -1,3 +1,9 @@
 .CardsView .darken-on-hover:hover {
   background-color: #ccc;
 }
+.CardsView button.new-card {
+  font-size: 40pt;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+}

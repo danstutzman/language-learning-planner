@@ -82,6 +82,7 @@ export interface BackendProps {
   listCards: () => Promise<CardList>
   listMorphemes: () => Promise<MorphemeList>
   parseL2Phrase: (l2Phrase: string) => Promise<MorphemeList>
+  predictText: (wordSoFar: string) => Promise<Array<string>>
   showCard: (id: number) => Promise<Card>
   showMorpheme: (id: number) => Promise<Morpheme>
   updateAnswer: (update: AnswerUpdate) => Promise<void>,
@@ -129,6 +130,7 @@ export default class Backend {
       listAnswers: this.listAnswers,
       listMorphemes: this.listMorphemes,
       parseL2Phrase: this.parseL2Phrase,
+      predictText: this.predictText,
       showCard: this.showCard,
       showMorpheme: this.showMorpheme,
       updateAnswer: this.updateAnswer,
@@ -291,4 +293,7 @@ export default class Backend {
     
   createAnswer = (answer: Answer): Promise<Answer> =>
     sendQuery('POST', `${this.baseUrl}/answers`, answer)
+
+  predictText = (wordSoFar: string): Promise<Array<string>> =>
+    sendQuery('POST', `${this.baseUrl}/predict-text`, { wordSoFar} )
 }

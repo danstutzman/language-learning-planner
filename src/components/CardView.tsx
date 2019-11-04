@@ -5,12 +5,14 @@ import {EMPTY_MORPHEME} from '../backend/Backend'
 import {Morpheme} from '../backend/Backend'
 import {MorphemeList} from '../backend/Backend'
 import MorphemeRow from './MorphemeRow'
+import PredictiveInput from './PredictiveInput'
 
 interface Props {
   close: () => void
   card: Card
   guessMorphemes: (l2Prefix: string) => Promise<MorphemeList>
   parseL2Phrase: (l2: string) => Promise<MorphemeList>
+  predictText: (wordSoFar: string) => Promise<Array<string>>
   save: (card: Card) => Promise<Card>
 }
 
@@ -44,10 +46,8 @@ export default class CardView extends React.PureComponent<Props, State> {
     }
   }
 
-  onChangeL2 = (e: any) => {
-    const l2 = e.target.value
+  setL2 = (l2: string) =>
     this.setState({ l2 })
-  }
 
   updateMorpheme = (morpheme: Morpheme, numMorpheme: number) => {
     this.setState(prev => ({
@@ -76,13 +76,11 @@ export default class CardView extends React.PureComponent<Props, State> {
 
   onClickSave = () => {
     const { l2, morphemes } = this.state
+    console.log('save', l2, morphemes)
     this.props.save({ ...this.props.card, l2, morphemes })
   }
 
   render() {
-    const { l2 } = this.state
-    const { card, close } = this.props
-
     // You need at least one morpheme to get started; otherwise there's
     // no Insert button to make your first morpheme.
     let morphemes = this.state.morphemes.length ?
@@ -91,15 +89,17 @@ export default class CardView extends React.PureComponent<Props, State> {
     return <div className='CardView'>
       <h2>
         Card
-        <button onClick={close}>X</button>
+        <button className='close-button' onClick={this.props.close}>
+          {"\u00d7"}
+        </button>
       </h2>
 
       <b>L2</b>
-      <input
-        type='text'
-        value={l2}
+      <PredictiveInput
+        value={this.state.l2}
         onBlur={this.onBlurL2}
-        onChange={this.onChangeL2} />
+        setValue={this.setL2}
+        predictText={this.props.predictText} />
       <br/>
 
       <b>Morphemes</b>
@@ -128,7 +128,9 @@ export default class CardView extends React.PureComponent<Props, State> {
         </tbody>
       </table>
 
-      <button onClick={this.onClickSave}>Save</button>
+      <button className='save-button' onClick={this.onClickSave}>
+        Save
+      </button>
     </div>
   }
 }

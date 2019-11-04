@@ -4,3 +4,10 @@
 .CardView .highlighted {
   background-color: #ccc;
 }
+.CardView .save-button {
+  font-size: 30pt;
+}
+.CardView .close-button {
+  float: right;
+  font-size: 30pt;
+}

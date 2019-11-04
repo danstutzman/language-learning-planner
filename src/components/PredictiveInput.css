@@ -1,0 +1,31 @@
+.PredictiveInput input {
+  font-size: 40pt;
+  font-family: sans-serif;
+  width: 100%;
+}
+.PredictiveInput span.hidden {
+  font-size: 40pt;
+  font-family: sans-serif;
+  visibility: hidden;
+}
+.PredictiveInput div.position-relative-placeholder {
+  position: relative;
+  display: inline;
+}
+.PredictiveInput div.position-relative-placeholder table.dropdown {
+  position: absolute;
+  left: 0;
+  display: inline-block;
+  font-size: 20pt;
+  font-family: sans-serif;
+  border: 1px black solid;
+  padding: 5px;
+  background-color: white;
+  border-collapse: collapse;
+}
+.PredictiveInput div.position-relative-placeholder table.dropdown td.shortcut {
+  padding-right: 10px;
+}
+.PredictiveInput table.dropdown tr.selected {
+  background-color: #aaf;
+}

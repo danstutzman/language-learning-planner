@@ -34,7 +34,7 @@ export default class App extends React.PureComponent<Props> {
     if (id === 'new') {
       const save = (card: Card) =>
         backend.createCard(card).then(card => {
-          args.history.replace(`/cards/${card.id}`)
+          args.history.push('/cards')
           return card
         })
       return <CardView
@@ -42,6 +42,7 @@ export default class App extends React.PureComponent<Props> {
         card={EMPTY_CARD}
         guessMorphemes={backend.guessMorphemes}
         parseL2Phrase={backend.parseL2Phrase}
+        predictText={backend.predictText}
         save={save} />
     } else {
       const promise = backend.showCard(parseInt(id, 10))
@@ -54,6 +55,7 @@ export default class App extends React.PureComponent<Props> {
           card={resolved.value}
           guessMorphemes={backend.guessMorphemes}
           parseL2Phrase={backend.parseL2Phrase}
+          predictText={backend.predictText}
           save={backend.updateCard} />
       })
     }
